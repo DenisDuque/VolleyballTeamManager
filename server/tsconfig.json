@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "target": "es6",
+    "module": "commonjs",
+    "outDir": "./build", // Esta es la línea a agregar o modificar
+    "strict": true,
+    "esModuleInterop": true
+  }
+}
