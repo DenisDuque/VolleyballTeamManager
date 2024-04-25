@@ -7,6 +7,7 @@ export interface IInteractionDocument extends Document {
     teamPoints: number;
     rivalPoints: number;
     type: 'good' | 'bad' | 'continuity' | 'substitution' | 'entrance';
+    action: 'block' | 'spike' | 'set' | 'receive' | null;
     deleted: boolean;
     createdAt: Date;
     updatedAt: Date;

@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { sendJsonResponse } from '../../helpers/util/express';
-import { getAllUsers, verifyUser } from './controller';
+import { getAllUsers, verifyUser, createUser } from './controller';
 
 const router = Router();
 
@@ -16,6 +16,11 @@ router.get(
 router.post(
   '/verifyUser', 
   verifyUser,
+);
+
+router.post(
+  '/createUser', 
+  createUser,
 );
 
 export default router;

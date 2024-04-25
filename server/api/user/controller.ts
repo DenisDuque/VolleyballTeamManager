@@ -2,9 +2,8 @@
 
 import { Request, Response } from 'express';
 import bcrypt from 'bcrypt';
-import UserModel from './User'; // Importa el modelo de usuario
+import UserModel from './User';
 
-// Controlador para obtener todos los usuarios
 export const getAllUsers = async (req: Request, res: Response) => {
   try {
     const users = await UserModel.find();
@@ -33,5 +32,32 @@ export const verifyUser = async (req: Request, res: Response) => {
     res.json(user);
   } catch (error) {
     res.status(500).json({ message: "Error al verificar el usuario" });
+  }
+};
+
+export const createUser = async (req: Request, res: Response) => {
+  const { name, surname, email, password } = req.body;
+
+  try {
+    const existingUser = await UserModel.findOne({ email });
+
+    if (existingUser) {
+      return res.status(400).json({ message: "El usuario ya existe" });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const newUser = new UserModel({
+      name,
+      surname,
+      email,
+      password: hashedPassword 
+    });
+
+    await newUser.save();
+
+    res.status(201).json(newUser);
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
   }
 };

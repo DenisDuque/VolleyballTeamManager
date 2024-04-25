@@ -1,5 +1,4 @@
 import { Request, Response } from 'express';
-import bcrypt from 'bcrypt';
 import InteractionModel from './Interaction';
 
 export const getMatchInteractions = async (req: Request, res: Response) => {

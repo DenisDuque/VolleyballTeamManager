@@ -2,6 +2,7 @@ import express, { Application } from 'express';
 import router from './api/router';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
+import bodyParser from 'body-parser';
 
 dotenv.config();
 
@@ -16,6 +17,7 @@ try {
   console.error('Error al conectar con la base de datos MongoDB:', error);
 }
 
+app.use(bodyParser.json());
 app.use('/', router);
 
 app.listen(PORT, () => {
