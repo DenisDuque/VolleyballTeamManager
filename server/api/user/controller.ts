@@ -24,7 +24,7 @@ export const verifyUser = async (req: Request, res: Response) => {
     }
 
     const passwordMatch = await user.comparePassword(password);
-
+    
     if (!passwordMatch) {
       return res.status(401).json({ message: "Contraseña incorrecta" });
     }

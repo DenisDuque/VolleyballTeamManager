@@ -8,7 +8,7 @@ dotenv.config();
 
 const app: Application = express();
 const PORT: number = parseInt(process.env.PORT || '3000', 10);
-const MONGODB_URI = 'mongodb://localhost:27017/volleyballteammanager';
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/volleyballteammanager';
 
 try {
     mongoose.connect(MONGODB_URI);
@@ -21,5 +21,5 @@ app.use(bodyParser.json());
 app.use('/', router);
 
 app.listen(PORT, () => {
-  console.log(`Servidor Express escuchando en el puerto ${PORT}`);
+  console.log(`Servidor Express en el puerto ${PORT}`);
 });

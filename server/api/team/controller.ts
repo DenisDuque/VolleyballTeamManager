@@ -3,7 +3,7 @@ import TeamModel from './Team';
 
 export const createTeam = async (req: Request, res: Response) => {
   try {
-    const { user, name, category, gender, players, matches, captain } = req.body;
+    const { user, name, category, gender, players, captain } = req.body;
 
     const newTeam = new TeamModel({
       user,
@@ -11,7 +11,6 @@ export const createTeam = async (req: Request, res: Response) => {
       category,
       gender,
       players,
-      matches,
       captain
     });
 
