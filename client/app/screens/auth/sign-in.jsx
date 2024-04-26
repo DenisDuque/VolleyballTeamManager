@@ -34,7 +34,10 @@ const SignIn = () => {
         const userData = await response.json();
         console.log('Inicio de sesión exitoso:', userData);
         setUser(userData);
-        navigation.navigate('Home');
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'Home' }],
+        });
       } else {
         const errorData = await response.json();
         setErrorMessage(errorData.message);
