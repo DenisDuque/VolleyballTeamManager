@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "VolleyballTeamManager",
-    "sheme": "volleyballteammanager",
+    "scheme": "com.dduquedev.volleyballteammanager",
     "slug": "volleyballteammanager",
     "version": "1.0.0",
     "orientation": "portrait",
