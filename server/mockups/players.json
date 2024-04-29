@@ -1,0 +1,306 @@
+[{
+  "_id": {
+    "$oid": "662f4011686a98b15373a341"
+  },
+  "user": {
+    "$oid": "662a0b3f0e4af95b63234182"
+  },
+  "name": "Juan",
+  "surname": "Martínez",
+  "position": "Libero",
+  "category": 0,
+  "gender": false,
+  "deleted": false,
+  "birthDate": "1988-03-15T00:00:00.000Z",
+  "createdAt": "2021-07-01T12:00:00.000Z",
+  "updatedAt": "2021-07-01T12:00:00.000Z"
+},
+{
+  "_id": {
+    "$oid": "662f4011686a98b15373a342"
+  },
+  "user": {
+    "$oid": "662a0b3f0e4af95b63234182"
+  },
+  "name": "Pedro",
+  "surname": "Gómez",
+  "position": "Setter",
+  "category": 0,
+  "gender": false,
+  "deleted": false,
+  "birthDate": "1985-06-20T00:00:00.000Z",
+  "createdAt": "2021-07-01T12:00:00.000Z",
+  "updatedAt": "2021-07-01T12:00:00.000Z"
+},
+{
+  "_id": {
+    "$oid": "662f4011686a98b15373a343"
+  },
+  "user": {
+    "$oid": "662a0b3f0e4af95b63234182"
+  },
+  "name": "Andrés",
+  "surname": "López",
+  "position": "Middle Blocker",
+  "category": 0,
+  "gender": false,
+  "deleted": false,
+  "birthDate": "1983-09-10T00:00:00.000Z",
+  "createdAt": "2021-07-01T12:00:00.000Z",
+  "updatedAt": "2021-07-01T12:00:00.000Z"
+},
+{
+  "_id": {
+    "$oid": "662f4011686a98b15373a344"
+  },
+  "user": {
+    "$oid": "662a0b3f0e4af95b63234182"
+  },
+  "name": "Antonio",
+  "surname": "Hernández",
+  "position": "Outside Hitter",
+  "category": 0,
+  "gender": false,
+  "deleted": false,
+  "birthDate": "1982-12-05T00:00:00.000Z",
+  "createdAt": "2021-07-01T12:00:00.000Z",
+  "updatedAt": "2021-07-01T12:00:00.000Z"
+},
+{
+  "_id": {
+    "$oid": "662f4011686a98b15373a345"
+  },
+  "user": {
+    "$oid": "662a0b3f0e4af95b63234182"
+  },
+  "name": "Javier",
+  "surname": "Fernández",
+  "position": "Opposite Hitter",
+  "category": 0,
+  "gender": false,
+  "deleted": false,
+  "birthDate": "1981-08-25T00:00:00.000Z",
+  "createdAt": "2021-07-01T12:00:00.000Z",
+  "updatedAt": "2021-07-01T12:00:00.000Z"
+},
+{
+  "_id": {
+    "$oid": "662f4011686a98b15373a346"
+  },
+  "user": {
+    "$oid": "662a0b3f0e4af95b63234182"
+  },
+  "name": "Carlos",
+  "surname": "Pérez",
+  "position": "Middle Blocker",
+  "category": 0,
+  "gender": false,
+  "deleted": false,
+  "birthDate": "1980-05-18T00:00:00.000Z",
+  "createdAt": "2021-07-01T12:00:00.000Z",
+  "updatedAt": "2021-07-01T12:00:00.000Z"
+},
+{
+  "_id": {
+    "$oid": "662f4011686a98b15373a347"
+  },
+  "user": {
+    "$oid": "662a0b3f0e4af95b63234182"
+  },
+  "name": "Pablo",
+  "surname": "Sánchez",
+  "position": "Outside Hitter",
+  "category": 0,
+  "gender": false,
+  "deleted": false,
+  "birthDate": "1979-11-30T00:00:00.000Z",
+  "createdAt": "2021-07-01T12:00:00.000Z",
+  "updatedAt": "2021-07-01T12:00:00.000Z"
+},
+{
+  "_id": {
+    "$oid": "662f4011686a98b15373a348"
+  },
+  "user": {
+    "$oid": "662a0b3f0e4af95b63234182"
+  },
+  "name": "Luis",
+  "surname": "Rodríguez",
+  "position": "Middle Blocker",
+  "category": 0,
+  "gender": false,
+  "deleted": false,
+  "birthDate": "1978-04-12T00:00:00.000Z",
+  "createdAt": "2021-07-01T12:00:00.000Z",
+  "updatedAt": "2021-07-01T12:00:00.000Z"
+},
+{
+  "_id": {
+    "$oid": "662f4011686a98b15373a349"
+  },
+  "user": {
+    "$oid": "662a0b3f0e4af95b63234182"
+  },
+  "name": "Mario",
+  "surname": "González",
+  "position": "Opposite Hitter",
+  "category": 0,
+  "gender": false,
+  "deleted": false,
+  "birthDate": "1977-10-29T00:00:00.000Z",
+  "createdAt": "2021-07-01T12:00:00.000Z",
+  "updatedAt": "2021-07-01T12:00:00.000Z"
+},
+{
+  "_id": {
+    "$oid": "662f4011686a98b15373a350"
+  },
+  "user": {
+    "$oid": "662a0b3f0e4af95b63234182"
+  },
+  "name": "Alberto",
+  "surname": "Martínez",
+  "position": "Libero",
+  "category": 0,
+  "gender": false,
+  "deleted": false,
+  "birthDate": "1976-12-04T00:00:00.000Z",
+  "createdAt": "2021-07-01T12:00:00.000Z",
+  "updatedAt": "2021-07-01T12:00:00.000Z"
+},
+{
+  "_id": {
+    "$oid": "662f4011686a98b15373a351"
+  },
+  "user": {
+    "$oid": "662a0b3f0e4af95b63234182"
+  },
+  "name": "Manuel",
+  "surname": "López",
+  "position": "Setter",
+  "category": 0,
+  "gender": false,
+  "deleted": false,
+  "birthDate": "1975-07-22T00:00:00.000Z",
+  "createdAt": "2021-07-01T12:00:00.000Z",
+  "updatedAt": "2021-07-01T12:00:00.000Z"
+},
+{
+  "_id": {
+    "$oid": "662f4011686a98b15373a352"
+  },
+  "user": {
+    "$oid": "662a0b3f0e4af95b63234182"
+  },
+  "name": "José",
+  "surname": "Gómez",
+  "position": "Outside Hitter",
+  "category": 0,
+  "gender": false,
+  "deleted": false,
+  "birthDate": "1974-09-15T00:00:00.000Z",
+  "createdAt": "2021-07-01T12:00:00.000Z",
+  "updatedAt": "2021-07-01T12:00:00.000Z"
+},
+{
+  "_id": {
+    "$oid": "662f4011686a98b15373a353"
+  },
+  "user": {
+    "$oid": "662a0b3f0e4af95b63234182"
+  },
+  "name": "Jorge",
+  "surname": "Fernández",
+  "position": "Middle Blocker",
+  "category": 0,
+  "gender": false,
+  "deleted": false,
+  "birthDate": "1973-03-18T00:00:00.000Z",
+  "createdAt": "2021-07-01T12:00:00.000Z",
+  "updatedAt": "2021-07-01T12:00:00.000Z"
+},
+{
+  "_id": {
+    "$oid": "662f4011686a98b15373a354"
+  },
+  "user": {
+    "$oid": "662a0b3f0e4af95b63234182"
+  },
+  "name": "Ricardo",
+  "surname": "Pérez",
+  "position": "Opposite Hitter",
+  "category": 0,
+  "gender": false,
+  "deleted": false,
+  "birthDate": "1972-05-20T00:00:00.000Z",
+  "createdAt": "2021-07-01T12:00:00.000Z",
+  "updatedAt": "2021-07-01T12:00:00.000Z"
+},
+{
+  "_id": {
+    "$oid": "662f4011686a98b15373a355"
+  },
+  "user": {
+    "$oid": "662a0b3f0e4af95b63234182"
+  },
+  "name": "Fernando",
+  "surname": "García",
+  "position": "Libero",
+  "category": 0,
+  "gender": false,
+  "deleted": false,
+  "birthDate": "1971-08-07T00:00:00.000Z",
+  "createdAt": "2021-07-01T12:00:00.000Z",
+  "updatedAt": "2021-07-01T12:00:00.000Z"
+},
+{
+  "_id": {
+    "$oid": "662f4011686a98b15373a356"
+  },
+  "user": {
+    "$oid": "662a0b3f0e4af95b63234182"
+  },
+  "name": "Ángel",
+  "surname": "Sánchez",
+  "position": "Setter",
+  "category": 0,
+  "gender": false,
+  "deleted": false,
+  "birthDate": "1970-10-31T00:00:00.000Z",
+  "createdAt": "2021-07-01T12:00:00.000Z",
+  "updatedAt": "2021-07-01T12:00:00.000Z"
+},
+{
+  "_id": {
+    "$oid": "662f4011686a98b15373a357"
+  },
+  "user": {
+    "$oid": "662a0b3f0e4af95b63234182"
+  },
+  "name": "Miguel",
+  "surname": "Martínez",
+  "position": "Middle Blocker",
+  "category": 0,
+  "gender": false,
+  "deleted": false,
+  "birthDate": "1969-02-14T00:00:00.000Z",
+  "createdAt": "2021-07-01T12:00:00.000Z",
+  "updatedAt": "2021-07-01T12:00:00.000Z"
+},
+{
+  "_id": {
+    "$oid": "662f4011686a98b15373a358"
+  },
+  "user": {
+    "$oid": "662a0b3f0e4af95b63234182"
+  },
+  "name": "Roberto",
+  "surname": "Gómez",
+  "position": "Outside Hitter",
+  "category": 0,
+  "gender": false,
+  "deleted": false,
+  "birthDate": "1968-04-18T00:00:00.000Z",
+  "createdAt": "2021-07-01T12:00:00.000Z",
+  "updatedAt": "2021-07-01T12:00:00.000Z"
+}]

@@ -1,0 +1,16 @@
+{
+    "_id": {
+      "$oid": "662a0b3f0e4af95b63234182"
+    },
+    "name": "Denis",
+    "surname": "Duque",
+    "email": "denis@gmail.com",
+    "password": "$2b$10$yd.pKRZotwONXNWEJAlGueutL3iTmAcjMs1eyDQ77pTfS8OVVW4pe",
+    "createdAt": {
+      "$date": "2024-04-25T07:50:23.212Z"
+    },
+    "updatedAt": {
+      "$date": "2024-04-25T07:50:23.212Z"
+    },
+    "__v": 0
+}

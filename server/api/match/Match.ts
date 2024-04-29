@@ -8,10 +8,7 @@ const matchSchema = new Schema<IMatchDocument, IMatchModel>({
     name: { type: String, required: true },
     rival: { type: String, required: true },
     team: { type: Schema.Types.ObjectId, ref: 'teams', required: true },
-    players: [{
-        _id: { type: Schema.Types.ObjectId, ref: 'players', required: true },
-        middleblocker: { type: Boolean, required: true }
-    }],
+    players: [{ type: Schema.Types.ObjectId, ref: 'players', required: true }],
     date: { type: Date, required: true },
     type: { type: Number, enum: [0, 1], required: true }, // 0 = Bo3, 1 = Bo5
     result: [{

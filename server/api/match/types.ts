@@ -5,7 +5,7 @@ export interface IMatchDocument extends Document {
     name: string;
     rival: string;
     team: Types.ObjectId;
-    players: { _id: Types.ObjectId, middleblocker: boolean }[];
+    players: Types.ObjectId[];
     date: Date;
     type: number;
     result: { set: number, team: number, rival: number }[];
