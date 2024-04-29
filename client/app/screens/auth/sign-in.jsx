@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import logo from '../../../assets/ball.png';
 import { useNavigation } from '@react-navigation/native';
 import { UserContext } from '../../context/UserContext';
+import LinearGradient from 'react-native-linear-gradient';
 
 const SignIn = () => {
   const [email, setEmail] = useState('');
@@ -55,7 +56,7 @@ const SignIn = () => {
           <Image source={logo} style={styles.logo} resizeMode='contain' />
         </View>
         <View style={styles.formContainer}>
-          <Text style={styles.title}>Log in to VMT</Text>
+          <Text style={styles.title}>Sign in to your account</Text>
           <TextInput
             style={styles.input}
             placeholder="Email Address"
@@ -72,7 +73,7 @@ const SignIn = () => {
             value={password}
           />
           {errorMessage ? <Text style={styles.errorMessage}>{errorMessage}</Text> : null}
-          <Button title="Sign in" onPress={handleLogin} />
+          <Button style={styles.button} title="Sign in" onPress={handleLogin} />
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -84,15 +85,15 @@ export default SignIn;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'Primary',
+    backgroundColor: '#1D1F24',
   },
   logoContainer: {
     alignItems: 'center',
     marginTop: 50,
   },
   logo: {
-    width: 115,
-    height: 35,
+    width: 128,
+    height: 128,
   },
   formContainer: {
     paddingHorizontal: 20,
@@ -114,4 +115,7 @@ const styles = StyleSheet.create({
     color: 'red',
     marginBottom: 10,
   },
+  button: {
+    color: '#539DF3',
+  }
 });

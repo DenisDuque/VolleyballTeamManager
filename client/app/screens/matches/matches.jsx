@@ -1,43 +1,61 @@
-import React from 'react';
-import { StyleSheet, Text, View, TextInput, FlatList } from 'react-native';
+import React, { useEffect, useState, useContext } from 'react';
+import { StyleSheet, Text, View, TextInput, FlatList, TouchableOpacity } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { UserContext } from '../../context/UserContext';
+import { useNavigation } from '@react-navigation/native';
 
 const MatchesScreen = () => {
-  const matches = [
-    { id: '1', name: 'Match 1' },
-    { id: '2', name: 'Match 2' },
-    { id: '3', name: 'Match 3' },
-    { id: '4', name: 'Match 4' },
-    { id: '5', name: 'Match 5' },
-    { id: '6', name: 'Match 6' },
-    { id: '7', name: 'Match 7' },
-    { id: '8', name: 'Match 8' },
-    { id: '9', name: 'Match 9' },
-    { id: '10', name: 'Match 10' },
-  ];
+  const { user } = useContext(UserContext);
+  const [matches, setMatches] = useState([]);
+  const [searchText, setSearchText] = useState('');
+  const navigation = useNavigation();
+
+  useEffect(() => {
+    const fetchMatches = async () => {
+      try {
+        const response = await fetch(`http://192.168.0.30:3000/matches/getMatches/${user._id}`);
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        const matchesData = await response.json();
+        setMatches(matchesData);
+      } catch (error) {
+        console.error('There was a problem fetching the data:', error);
+      }
+    };
+
+    fetchMatches();
+  }, [user]);
+
+  const handleMatchPress = (matchId) => {
+    // Navegar a la pantalla de detalles del partido con el ID del partido
+    navigation.navigate('MatchDetails', { matchId });
+  };
 
   const renderItem = ({ item }) => (
-    <View style={styles.matchItem}>
-      <Text>{item.name}</Text>
-    </View>
+    <TouchableOpacity onPress={() => handleMatchPress(item.id)}>
+      <View style={styles.matchItem}>
+        <Text>{item.name}</Text>
+      </View>
+    </TouchableOpacity>
   );
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Matches</Text>
+    <SafeAreaView style={styles.container}>
       <View style={styles.searchBar}>
         <TextInput
           style={styles.searchInput}
           placeholder="Search..."
+          value={searchText}
+          onChangeText={setSearchText}
         />
-        {/* Aquí puedes agregar el filtro */}
       </View>
       <FlatList
         data={matches}
         renderItem={renderItem}
         keyExtractor={item => item.id}
       />
-      {/* Aquí puedes agregar la barra de navegación */}
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -46,11 +64,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
     padding: 10,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 10,
   },
   searchBar: {
     flexDirection: 'row',
