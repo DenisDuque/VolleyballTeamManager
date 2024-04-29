@@ -4,7 +4,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import logo from '../../../assets/ball.png';
 import { useNavigation } from '@react-navigation/native';
 import { UserContext } from '../../context/UserContext';
-import LinearGradient from 'react-native-linear-gradient';
 
 const SignIn = () => {
   const [email, setEmail] = useState('');
