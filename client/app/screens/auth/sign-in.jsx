@@ -1,7 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { StyleSheet, Text, View, ScrollView, Image, TextInput, Button } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import logo from '../../../assets/favicon.png';
+import logo from '../../../assets/ball.png';
 import { useNavigation } from '@react-navigation/native';
 import { UserContext } from '../../context/UserContext';
 
