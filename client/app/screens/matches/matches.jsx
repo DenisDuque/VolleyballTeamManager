@@ -27,13 +27,13 @@ const MatchesScreen = () => {
     fetchMatches();
   }, [user]);
 
-  const handleMatchPress = (matchId) => {
+  const handleMatchPress = (matchId, itemName) => {
     // Navegar a la pantalla de detalles del partido con el ID del partido
-    navigation.navigate('MatchDetails', { matchId });
+    navigation.navigate('MatchDetails', { matchId, itemName });
   };
 
   const renderItem = ({ item }) => (
-    <TouchableOpacity onPress={() => handleMatchPress(item.id)}>
+    <TouchableOpacity onPress={() => handleMatchPress(item._id, item.name)}>
       <View style={styles.matchItem}>
         <Text>{item.name}</Text>
       </View>
@@ -53,7 +53,7 @@ const MatchesScreen = () => {
       <FlatList
         data={matches}
         renderItem={renderItem}
-        keyExtractor={item => item.id}
+        keyExtractor={item => item._id}
       />
     </SafeAreaView>
   );

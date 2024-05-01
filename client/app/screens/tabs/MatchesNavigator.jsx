@@ -8,12 +8,9 @@ const Stack = createStackNavigator();
 const options = {
     default: {
       headerStyle: {
-        backgroundColor: '#131417', // Cambia aquí al color que desees para el encabezado de Home
+        backgroundColor: '#131417',
       },
-      headerTintColor: '#EBEBEB', // Cambia aquí el color del texto del encabezado si es necesario
-      headerTitleStyle: {
-        fontWeight: 'bold',
-      },
+      headerTintColor: '#EBEBEB',
     }
   };
 
@@ -21,7 +18,7 @@ const MatchesStackNavigator = () => {
   return (
     <Stack.Navigator>
       <Stack.Screen name="Matches" component={MatchesScreen} />
-      <Stack.Screen name="MatchDetails" component={MatchDetailsScreen} />
+      <Stack.Screen name="MatchDetails" component={MatchDetailsScreen} options={({ route }) => ({ title: route.params.itemName, ...options.default })} />
     </Stack.Navigator>
   );
 };

@@ -48,7 +48,7 @@ const MainNavigator = () => {
       <Tab.Screen name="Home" component={HomeScreen} options={options.default}/>
       {/*<Tab.Screen name="Teams" component={TeamsScreen} options={options.default} />*/}
       {/*<Tab.Screen name="Players" component={PlayersScreen} options={options.default} />*/}
-      <Tab.Screen name="Matches" component={MatchesStackNavigator} options={options.default}/>
+      <Tab.Screen name="Matches" component={MatchesStackNavigator} options={options.default} />
       {/*<Tab.Screen name="Profile" component={ProfileScreen} options={options.default} />*/}
     </Tab.Navigator>
   );
