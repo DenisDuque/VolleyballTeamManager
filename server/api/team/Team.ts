@@ -7,7 +7,7 @@ const teamSchema = new Schema<ITeamDocument, ITeamModel>({
   user: { type: mongoose.Schema.Types.ObjectId, ref: 'users', required: true },
   name: { type: String, required: true },
   category: { type: Number, required: true, enum: [0, 1, 2, 3] }, // 0 = Senior, 1 = Junior, etc.
-  gender: { type: Boolean, required: true }, // true = female, false = male
+  gender: { type: Number, required: true, enum: [0, 1, 2] }, // 0 = male, 1 = female, 2 = mixed
   players: [{ type: mongoose.Schema.Types.ObjectId, ref: 'players' }],
   captain: { type: mongoose.Schema.Types.ObjectId, ref: 'players' },
   deleted: { type: Boolean, default: false },

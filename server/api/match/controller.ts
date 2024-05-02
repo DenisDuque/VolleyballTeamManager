@@ -16,7 +16,7 @@ export const getMatches = async (req: Request, res: Response) => {
 export const getMatch = async (req: Request, res: Response) => {
   try {
     const matchId = req.params.matchId;
-
+    
     const match = await MatchModel.findById(matchId)
     .populate({
       path: 'user',
@@ -24,7 +24,7 @@ export const getMatch = async (req: Request, res: Response) => {
     })
     .populate({
       path: 'team',
-      select: 'name category'
+      select: 'name category gender captain'
     })
     .populate({
       path: 'players',

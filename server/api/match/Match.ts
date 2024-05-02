@@ -16,7 +16,7 @@ const matchSchema = new Schema<IMatchDocument, IMatchModel>({
         team: { type: Number, required: true },
         rival: { type: Number, required: true }
     }],
-    status: { type: String, required: true },
+    status: { type: Number, required: true, enum: [0, 1, 2] }, // 0 = Pending, 1 = Won, 2 = Lost
     lineups: [{
         players: [{
             _id: { type: Schema.Types.ObjectId, ref: 'players', required: true },

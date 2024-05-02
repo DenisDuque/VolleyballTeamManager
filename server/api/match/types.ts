@@ -9,7 +9,7 @@ export interface IMatchDocument extends Document {
     date: Date;
     type: number;
     result: { set: number, team: number, rival: number }[];
-    status: string;
+    status: number;
     lineups: { players: Types.ObjectId[], libero: { _id: Types.ObjectId, receiving: boolean }[] }[];
     finished: boolean;
     createdAt: Date;
