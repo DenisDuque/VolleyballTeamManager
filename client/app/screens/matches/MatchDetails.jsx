@@ -2,11 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, ActivityIndicator, ScrollView, Button, TouchableOpacity  } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Badges from '../../components/badges';
+import { useNavigation } from '@react-navigation/native';
 
 const MatchDetailsScreen = ({ route }) => {
   const { matchId } = route.params;
   const [matchDetails, setMatchDetails] = useState(null);
   const [loading, setLoading] = useState(true);
+  const navigation = useNavigation();
 
   const categoryType = {
     0: 'senior',
@@ -64,6 +66,10 @@ const MatchDetailsScreen = ({ route }) => {
     return formattedDate;
   };
 
+  const handleLineupsPress = (matchId) => {
+    navigation.navigate('Lineups', { matchId });
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.date}>{formatDate(matchDetails.date)}</Text>
@@ -100,7 +106,7 @@ const MatchDetailsScreen = ({ route }) => {
       </View>
       <View style={styles.buttonsContainer}>
           <View style={styles.buttonsLeft}>
-            <TouchableOpacity style={styles.lineupsButton}>
+            <TouchableOpacity style={styles.lineupsButton} onPress={() => handleLineupsPress(matchDetails._id)}>
                 <Icon name="assignment" size={36} color="white" />
                 <Text style={{ color: 'white', fontSize: 18, marginLeft: 8 }}>Lineups</Text>
             </TouchableOpacity>
@@ -109,7 +115,7 @@ const MatchDetailsScreen = ({ route }) => {
                 <Text style={{ color: 'white', fontSize: 18, marginLeft: 8 }}>Download Lineups</Text>
             </TouchableOpacity>
           </View>
-          <TouchableOpacity style={styles.startGameButton}>
+          <TouchableOpacity style={styles.startGameButton} >
             <View style={styles.buttonContent}>
               <Icon name="play-circle-outline" size={36} color="white" />
               <Text style={{ color: 'white', fontSize: 18 }}>Start Game</Text>
@@ -194,7 +200,8 @@ const styles = StyleSheet.create({
   },
   playerScroll: {
     flexGrow: 1,
-    maxHeight: 200,
+    height: 300,
+    maxHeight: 300,
   },
   playersTitle: {
     fontSize: 18,

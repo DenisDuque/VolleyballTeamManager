@@ -24,7 +24,7 @@ const options = {
   }
 };
 
-const MainNavigator = () => {
+const MainNavigator = ({ navigation }) => {
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -45,11 +45,12 @@ const MainNavigator = () => {
         },
       })}
     >
-      <Tab.Screen name="Home" component={HomeScreen} options={options.default}/>
-      {/*<Tab.Screen name="Teams" component={TeamsScreen} options={options.default} />*/}
-      {/*<Tab.Screen name="Players" component={PlayersScreen} options={options.default} />*/}
-      <Tab.Screen name="Matches" component={MatchesStackNavigator} options={options.default} />
-      {/*<Tab.Screen name="Profile" component={ProfileScreen} options={options.default} />*/}
+      <Tab.Screen name="Home" options={options.default}>
+        {(props) => <HomeScreen {...props} navigation={navigation} />}
+      </Tab.Screen>
+      <Tab.Screen name="Matches" options={options.default}>
+        {(props) => <MatchesScreen {...props} navigation={navigation} />}
+      </Tab.Screen>
     </Tab.Navigator>
   );
 };
