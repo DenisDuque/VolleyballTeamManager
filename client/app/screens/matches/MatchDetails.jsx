@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, ActivityIndicator, ScrollView, Button, TouchableOpacity  } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Badges from '../../components/badges';
+import Avatar from '../../components/Avatar';
 import { useNavigation } from '@react-navigation/native';
 
 const MatchDetailsScreen = ({ route }) => {
@@ -97,9 +98,14 @@ const MatchDetailsScreen = ({ route }) => {
         <ScrollView style={styles.playerScroll}>
           {matchDetails.players.map((player, index) => (
             <View style={styles.player} key={index}>
-              <Text style={styles.playerName}>{player.name} {player.surname}</Text>
-              {player._id === matchDetails.team.captain && <Badges type="captain" />}
-              <Text style={styles.playerPosition}>{player.position}</Text>
+              <Avatar number={player.dorsal} size={50} />
+              <View style={styles.playerInfoContainer}>
+                <View style={styles.playerInfo}>
+                  <Text style={styles.playerName}>{player.name} {player.surname}</Text>
+                  {player._id === matchDetails.team.captain && <Badges type="captain" />}
+                </View>
+                <Text style={styles.playerPosition}>{player.position}</Text>
+              </View>
             </View>
           ))}
         </ScrollView>
@@ -211,17 +217,26 @@ const styles = StyleSheet.create({
   },
   player: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 5,
+  },
+  playerInfoContainer: {
+    flexDirection: 'column',
+    marginLeft: 10,
+  },
+  playerInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   playerName: {
     fontSize: 16,
     color: '#fff',
+    marginRight: 5,
   },
   playerPosition: {
     fontSize: 14,
     color: '#999',
+    marginTop: -3,
   },
   buttonsContainer: {
     marginTop: 20,

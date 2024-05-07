@@ -1,16 +1,18 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { StyleSheet, Text, View, TextInput, ActivityIndicator,  FlatList, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, ActivityIndicator, ScrollView, Button, TouchableOpacity  } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { UserContext } from '../../../context/UserContext';
 import { useNavigation } from '@react-navigation/native';
+import Avatar from '../../../components/Avatar';
+import Badges from '../../../components/badges';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const LineupsScreen = ({ route }) => {
   const { matchId } = route.params;
   const [currentSet, setCurrentSet] = useState(1);
   const [matchDetails, setMatchDetails] = useState(null);
-  const [currentSetDetails, setCurrentSetDetails] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [playersOnCourt, setPlayersOnCourt] = useState([]);
 
   useEffect(() => {
     const fetchMatchDetails = async () => {
@@ -60,18 +62,47 @@ const LineupsScreen = ({ route }) => {
     <View style={styles.container}>
       <View style={styles.setNavigator}>
         <TouchableOpacity onPress={goToPreviousSet}>
-          <Icon name="chevron-left" size={30} color="black" />
+          <Icon name="chevron-left" size={30} color="#676D75" />
         </TouchableOpacity>
         <Text style={styles.setNumber}>Set {currentSet}</Text>
         <TouchableOpacity onPress={goToNextSet}>
-          <Icon name="chevron-right" size={30} color="black" />
+          <Icon name="chevron-right" size={30} color="#676D75" />
         </TouchableOpacity>
       </View>
       <View style={styles.court}>
-        <View style={styles.frontCourt}></View>
-        <View style={styles.backCourt}></View>
+      <View style={styles.frontCourt}>
+          {playersOnCourt.slice(0, 3).map((player, index) => (
+            <View style={styles.playerContainer} key={index}>
+              <Text style={styles.playerDorsal}>{player.dorsal}</Text>
+            </View>
+          ))}
+        </View>
+        <View style={styles.backCourt}>
+          {playersOnCourt.slice(3, 6).map((player, index) => (
+            <View style={styles.playerContainer} key={index}>
+              <Text style={styles.playerDorsal}>{player.dorsal}</Text>
+            </View>
+          ))}
+        </View>
       </View>
       <Text>{JSON.stringify(matchDetails.lineups)}</Text>
+      <View style={styles.playersContainer}>
+        <Text style={styles.playersTitle}>Players</Text>
+        <ScrollView style={styles.playerScroll}>
+          {matchDetails.players.map((player, index) => (
+            <View style={styles.player} key={index}>
+              <Avatar number={player.dorsal} size={50} />
+              <View style={styles.playerInfoContainer}>
+                <View style={styles.playerInfo}>
+                  <Text style={styles.playerName}>{player.name} {player.surname}</Text>
+                  {player._id === matchDetails.team.captain && <Badges type="captain" />}
+                </View>
+                <Text style={styles.playerPosition}>{player.position}</Text>
+              </View>
+            </View>
+          ))}
+        </ScrollView>
+      </View>
     </View>
   );
 };
@@ -79,7 +110,7 @@ const LineupsScreen = ({ route }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#131417',
     padding: 10,
   },
   setNavigator: {
@@ -91,17 +122,61 @@ const styles = StyleSheet.create({
   },
   setNumber: {
     fontSize: 20,
-    fontWeight: 'bold',
     marginHorizontal: 6,
+    color: '#fff'
   },
   court: {
-    // Estilos para el área de la cancha
+    width: '100%',
+    height: 200,
+    backgroundColor: '#1D1F24',
+    borderRadius: 5,
   },
   frontCourt: {
-    // Estilos para el frente de la cancha
+    width: '100%',
+    height: 70,
+    borderBottomColor: '#fff',
+    borderBottomWidth: 1,
   },
   backCourt: {
-    // Estilos para la parte trasera de la cancha
+    width: '100%',
+    height: 130,
+  },
+  playersContainer: {
+    marginTop: 20,
+  },
+  playerScroll: {
+    flexGrow: 1,
+    height: 300,
+    maxHeight: 300,
+  },
+  playersTitle: {
+    fontSize: 18,
+    color: '#fff',
+    marginBottom: 10,
+    fontWeight: 'bold',
+  },
+  player: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 5,
+  },
+  playerInfoContainer: {
+    flexDirection: 'column',
+    marginLeft: 10,
+  },
+  playerInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  playerName: {
+    fontSize: 16,
+    color: '#fff',
+    marginRight: 5,
+  },
+  playerPosition: {
+    fontSize: 14,
+    color: '#999',
+    marginTop: -3,
   },
 });
 

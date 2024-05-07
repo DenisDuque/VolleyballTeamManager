@@ -4,6 +4,7 @@ export interface IPlayerDocument extends Document {
   user: Types.ObjectId;
   name: string;
   surname: string;
+  dorsal: number;
   position: string;
   category: 0 | 1 | 2 | 3; // 0 = Senior, 1 = Junior, etc.
   gender: boolean; // true = female, false = male

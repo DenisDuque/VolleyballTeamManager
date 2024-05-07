@@ -7,6 +7,7 @@ const playerSchema = new Schema<IPlayerDocument, IPlayerModel>({
   user: { type: mongoose.Schema.Types.ObjectId, ref: 'users', required: true },
   name: { type: String, required: true },
   surname: { type: String, required: true },
+  dorsal: { type: Number, required: true },
   position: { type: String, required: true },
   category: { type: Number, required: true, enum: [0, 1, 2, 3] }, // 0 = Senior, 1 = Junior, etc.
   gender: { type: Boolean, required: true }, // true = female, false = male

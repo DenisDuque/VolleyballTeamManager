@@ -3,12 +3,13 @@ import PlayerModel from './Player';
 
 export const createPlayer = async (req: Request, res: Response) => {
   try {
-    const { user, name, surname, position, category, gender, teams, matches, birthDate } = req.body;
+    const { user, name, surname, dorsal, position, category, gender, teams, matches, birthDate } = req.body;
 
     const newPlayer = new PlayerModel({
       user,
       name,
       surname,
+      dorsal,
       position,
       category,
       gender,

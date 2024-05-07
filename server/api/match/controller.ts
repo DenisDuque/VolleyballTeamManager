@@ -28,7 +28,7 @@ export const getMatch = async (req: Request, res: Response) => {
     })
     .populate({
       path: 'players',
-      select: 'name surname position'
+      select: 'name surname dorsal position'
     })
     .populate({
       path: 'lineups.players._id',
