@@ -13,6 +13,7 @@ const LineupsScreen = ({ route }) => {
   const [matchDetails, setMatchDetails] = useState(null);
   const [loading, setLoading] = useState(true);
   const [playersOnCourt, setPlayersOnCourt] = useState([]);
+  const [selectedPlayer, setSelectedPlayer] = useState(null);
 
   useEffect(() => {
     const fetchMatchDetails = async () => {
@@ -58,6 +59,10 @@ const LineupsScreen = ({ route }) => {
     }
   };
 
+  const selectPlayer = (player) => {
+    setSelectedPlayer(player);
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.setNavigator}>
@@ -70,19 +75,12 @@ const LineupsScreen = ({ route }) => {
         </TouchableOpacity>
       </View>
       <View style={styles.court}>
-      <View style={styles.frontCourt}>
-          {playersOnCourt.slice(0, 3).map((player, index) => (
-            <View style={styles.playerContainer} key={index}>
-              <Text style={styles.playerDorsal}>{player.dorsal}</Text>
-            </View>
-          ))}
+        <View style={styles.frontCourt}>
+          <TouchableOpacity style={styles.lineUpPosition} onPress={() => assignPosition(index)}>
+            
+          </TouchableOpacity>
         </View>
         <View style={styles.backCourt}>
-          {playersOnCourt.slice(3, 6).map((player, index) => (
-            <View style={styles.playerContainer} key={index}>
-              <Text style={styles.playerDorsal}>{player.dorsal}</Text>
-            </View>
-          ))}
         </View>
       </View>
       <Text>{JSON.stringify(matchDetails.lineups)}</Text>
@@ -90,16 +88,18 @@ const LineupsScreen = ({ route }) => {
         <Text style={styles.playersTitle}>Players</Text>
         <ScrollView style={styles.playerScroll}>
           {matchDetails.players.map((player, index) => (
-            <View style={styles.player} key={index}>
-              <Avatar number={player.dorsal} size={50} />
-              <View style={styles.playerInfoContainer}>
-                <View style={styles.playerInfo}>
-                  <Text style={styles.playerName}>{player.name} {player.surname}</Text>
-                  {player._id === matchDetails.team.captain && <Badges type="captain" />}
+            <TouchableOpacity onPress={() => selectPlayer(player)} key={index}>
+              <View style={[styles.player, selectedPlayer && selectedPlayer._id === player._id && styles.selectedPlayer]} key={index}>
+                <Avatar number={player.dorsal} size={50} />
+                <View style={styles.playerInfoContainer}>
+                  <View style={styles.playerInfo}>
+                    <Text style={styles.playerName}>{player.name} {player.surname}</Text>
+                    {player._id === matchDetails.team.captain && <Badges type="captain" />}
+                  </View>
+                  <Text style={styles.playerPosition}>{player.position}</Text>
                 </View>
-                <Text style={styles.playerPosition}>{player.position}</Text>
               </View>
-            </View>
+            </TouchableOpacity>
           ))}
         </ScrollView>
       </View>
@@ -178,6 +178,12 @@ const styles = StyleSheet.create({
     color: '#999',
     marginTop: -3,
   },
+  selectedPlayer: {
+    borderWidth: 1,
+    borderColor: '#fff',
+    overflow: 'visible',
+    overlayColor: 'transparent',
+  }
 });
 
 export default LineupsScreen;

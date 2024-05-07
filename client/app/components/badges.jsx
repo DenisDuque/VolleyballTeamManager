@@ -88,8 +88,8 @@ const Badges = ({ type }) => {
             borderRadius: 25,
             justifyContent: 'center',
             alignItems: 'center',
-            alignSelf: 'flex-start', // Ajusta el ancho al contenido del texto
-            paddingHorizontal: 10, // Añade un poco de espacio alrededor del texto
+            alignSelf: 'flex-start',
+            paddingHorizontal: 10,
             paddingVertical: 5,
             marginRight: 10,
         },

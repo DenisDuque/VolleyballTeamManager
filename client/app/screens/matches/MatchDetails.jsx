@@ -73,7 +73,7 @@ const MatchDetailsScreen = ({ route }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.date}>{formatDate(matchDetails.date)}</Text>
+      <Text style={styles.date}>{matchDetails?.date && formatDate(matchDetails.date)}</Text>
       <View style={styles.scoreboard}>
         <View style={styles.square}>
           <Text style={styles.number}>0</Text>
@@ -113,18 +113,18 @@ const MatchDetailsScreen = ({ route }) => {
       <View style={styles.buttonsContainer}>
           <View style={styles.buttonsLeft}>
             <TouchableOpacity style={styles.lineupsButton} onPress={() => handleLineupsPress(matchDetails._id)}>
-                <Icon name="assignment" size={36} color="white" />
-                <Text style={{ color: 'white', fontSize: 18, marginLeft: 8 }}>Lineups</Text>
+                <Icon name="assignment" size={36} color="#539DF3" />
+                <Text style={{ color: '#539DF3', fontSize: 18, marginLeft: 8 }}>Lineups</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.downloadLineupsButton}>
-                <Icon name="file-download" size={36} color="white" />
-                <Text style={{ color: 'white', fontSize: 18, marginLeft: 8 }}>Download Lineups</Text>
+                <Icon name="file-download" size={36} color="#9953F3" />
+                <Text style={{ color: '#9953F3', fontSize: 18, marginLeft: 8 }}>Download Lineups</Text>
             </TouchableOpacity>
           </View>
           <TouchableOpacity style={styles.startGameButton} >
             <View style={styles.buttonContent}>
-              <Icon name="play-circle-outline" size={36} color="white" />
-              <Text style={{ color: 'white', fontSize: 18 }}>Start Game</Text>
+              <Icon name="play-circle-outline" size={36} color="#FD9E02" />
+              <Text style={{ color: '#FD9E02', fontSize: 18 }}>Start Game</Text>
             </View>
           </TouchableOpacity>
       </View>
@@ -250,7 +250,9 @@ const styles = StyleSheet.create({
   lineupsButton: {
     width: 200,
     height: 50,
-    backgroundColor: '#539DF3',
+    background: 'transparent',
+    borderColor: '#539DF3',
+    borderWidth: 1,
     flexDirection: 'row', 
     alignItems: 'center',
     justifyContent: 'center',
@@ -260,7 +262,9 @@ const styles = StyleSheet.create({
   downloadLineupsButton: {
     width: 200,
     height: 50,
-    backgroundColor: '#9953F3',
+    background: 'transparent',
+    borderColor: '#9953F3',
+    borderWidth: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
@@ -269,7 +273,9 @@ const styles = StyleSheet.create({
   startGameButton: {
     flex: 1,
     width: 150,
-    backgroundColor: '#FD9E02',
+    background: 'transparent',
+    borderColor: '#FD9E02',
+    borderWidth: 1,
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 5,
