@@ -10,6 +10,7 @@ const MatchDetailsScreen = ({ route }) => {
   const [matchDetails, setMatchDetails] = useState(null);
   const [loading, setLoading] = useState(true);
   const navigation = useNavigation();
+  const apiUrl = process.env.EXPO_PUBLIC_API_URL || '192.168.0.30:3000';
 
   const categoryType = {
     0: 'senior',
@@ -33,7 +34,7 @@ const MatchDetailsScreen = ({ route }) => {
   useEffect(() => {
     const fetchMatchDetails = async () => {
       try {
-        const response = await fetch(`http://192.168.0.30:3000/matches/getMatch/${matchId}`);
+        const response = await fetch(`http://`+ apiUrl +`/matches/getMatch/${matchId}`);
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
@@ -70,7 +71,7 @@ const MatchDetailsScreen = ({ route }) => {
   const handleLineupsPress = (matchId) => {
     navigation.navigate('Lineups', { matchId });
   };
-
+  console.log(statusType[matchDetails.status])
   return (
     <View style={styles.container}>
       <Text style={styles.date}>{matchDetails?.date && formatDate(matchDetails.date)}</Text>

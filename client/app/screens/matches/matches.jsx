@@ -9,11 +9,12 @@ const MatchesScreen = () => {
   const [matches, setMatches] = useState([]);
   const [searchText, setSearchText] = useState('');
   const navigation = useNavigation();
+  const apiUrl = process.env.EXPO_PUBLIC_API_URL || '192.168.0.30:3000';
 
   useEffect(() => {
     const fetchMatches = async () => {
       try {
-        const response = await fetch(`http://192.168.0.30:3000/matches/getMatches/${user._id}`);
+        const response = await fetch(`http://`+ apiUrl +`/matches/getMatches/${user._id}`);
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }

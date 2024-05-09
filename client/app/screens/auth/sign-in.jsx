@@ -5,12 +5,15 @@ import logo from '../../../assets/ball.png';
 import { useNavigation } from '@react-navigation/native';
 import { UserContext } from '../../context/UserContext';
 
+
 const SignIn = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const navigation = useNavigation();
   const { setUser } = useContext(UserContext);
+
+  const apiUrl = process.env.EXPO_PUBLIC_API_URL || '192.168.0.30:3000';
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -19,7 +22,7 @@ const SignIn = () => {
     }
   
     try {
-      const response = await fetch('http://192.168.0.30:3000/users/verifyUser', {
+      const response = await fetch('http://'+ apiUrl +'/users/verifyUser', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

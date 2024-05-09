@@ -15,6 +15,7 @@ const Stack = createStackNavigator();
 export default function App() {
   const [user, setUser] = useState(null);
   const navigation = useNavigation();
+  
 
   const options = {
     default: {

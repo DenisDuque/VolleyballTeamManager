@@ -22,6 +22,12 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
+      },
+      "useAndroidX": true,
+      "config": {
+        "android": {
+          "sdkRoot": "/home/daw1a/Android/Sdk"
+        }
       }
     },
     "web": {

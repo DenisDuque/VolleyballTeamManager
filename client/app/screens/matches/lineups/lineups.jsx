@@ -14,11 +14,12 @@ const LineupsScreen = ({ route }) => {
   const [loading, setLoading] = useState(true);
   const [playersOnCourt, setPlayersOnCourt] = useState([]);
   const [selectedPlayer, setSelectedPlayer] = useState(null);
+  const apiUrl = process.env.EXPO_PUBLIC_API_URL || '192.168.0.30:3000';
 
   useEffect(() => {
     const fetchMatchDetails = async () => {
       try {
-        const response = await fetch(`http://192.168.0.30:3000/matches/getMatch/${matchId}`);
+        const response = await fetch(`http://`+ apiUrl +`/matches/getMatch/${matchId}`);
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
