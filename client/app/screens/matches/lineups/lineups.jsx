@@ -7,14 +7,19 @@ import Avatar from '../../../components/Avatar';
 import Badges from '../../../components/badges';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
+const apiUrl = process.env.EXPO_PUBLIC_API_URL || '192.168.0.30:3000';
+
 const LineupsScreen = ({ route }) => {
   const { matchId } = route.params;
   const [currentSet, setCurrentSet] = useState(1);
+  const [setterPosition, setSetterPosition] = useState({ 1: 1, 2: 1, 3: 1, 4: 1, 5: 1, });
   const [matchDetails, setMatchDetails] = useState(null);
   const [loading, setLoading] = useState(true);
   const [playersOnCourt, setPlayersOnCourt] = useState([]);
   const [selectedPlayer, setSelectedPlayer] = useState(null);
-  const apiUrl = process.env.EXPO_PUBLIC_API_URL || '192.168.0.30:3000';
+  const [lineups, setLineups] = useState({ 1: {}, 2: {}, 3: {}, 4: {}, 5: {}, });
+  const [captains, setCaptains] = useState({ 1: {}, 2: {}, 3: {}, 4: {}, 5: {}, });
+  const [liberos, setLiberos] = useState({ 1: {}, 2: {}, 3: {}, 4: {}, 5: {}, });
 
   useEffect(() => {
     const fetchMatchDetails = async () => {
@@ -39,6 +44,11 @@ const LineupsScreen = ({ route }) => {
 
   }, [currentSet]);
 
+  useEffect(() => {
+
+
+  }, [setterPosition]);
+
   if (loading || !matchDetails) {
     return (
       <View style={styles.container}>
@@ -60,9 +70,90 @@ const LineupsScreen = ({ route }) => {
     }
   };
 
+  const goToPreviousRotation = () => {
+    const updatedRotations = { ...setterPosition };
+    if (updatedRotations[currentSet] > 1) {
+      updatedRotations[currentSet] -= 1;
+      setSetterPosition(updatedRotations);
+    }
+  };
+  
+  const goToNextRotation = () => {
+    const updatedRotations = { ...setterPosition };
+    const totalPositions = 6;
+    if (updatedRotations[currentSet] < totalPositions) {
+      updatedRotations[currentSet] += 1;
+      setSetterPosition(updatedRotations);
+    }
+  };
+  
+
   const selectPlayer = (player) => {
     setSelectedPlayer(player);
   };
+
+  const assignPosition = (position) => {
+    const updatedLineups = { ...lineups };
+    const isInLineups = getPositionById(selectedPlayer._id);
+    const isInLiberos = getLiberoById(selectedPlayer._id);
+    if (isInLiberos != null) {
+      const updatedLiberos = { ...liberos };
+      delete updatedLiberos[currentSet][isInLiberos];
+      setLiberos(updatedLiberos);
+    }
+    if (isInLineups != null) {
+      delete updatedLineups[currentSet][isInLineups];
+    }
+    updatedLineups[currentSet][position] = selectedPlayer;
+    setLineups(updatedLineups);
+  };
+
+  const assignCaptain = () => {
+    const updatedCaptains = { ...captains };
+    const isInLineups = getPositionById(selectedPlayer._id);
+    if (isInLineups != null) {
+      updatedCaptains[currentSet] = selectedPlayer;
+    }
+    setCaptains(updatedCaptains);
+  }
+
+  const assignLibero = (index) => {
+    const updatedLiberos = { ...liberos };
+    const isInLineups = getPositionById(selectedPlayer._id);
+    if (isInLineups == null) {
+      updatedLiberos[currentSet][index] = selectedPlayer;
+    }
+    setLiberos(updatedLiberos);
+  }
+
+  const isDefined = (obj) => {
+    const defined = obj && Object.keys(obj).length > 0;
+    return defined;
+  };
+
+  const getPositionById = (id) => {
+    for (const position in lineups[currentSet]) {
+      if (lineups[currentSet].hasOwnProperty(position)) {
+        if (lineups[currentSet][position]._id === id) {
+          return position;
+        }
+      }
+    }
+    return null;
+  };
+
+  const getLiberoById = (id) => {
+    for (const position in liberos[currentSet]) {
+      if (liberos[currentSet].hasOwnProperty(position)) {
+        if (liberos[currentSet][position]._id === id) {
+          return position;
+        }
+      }
+    }
+    return null;
+  };
+  
+  
 
   return (
     <View style={styles.container}>
@@ -77,21 +168,127 @@ const LineupsScreen = ({ route }) => {
       </View>
       <View style={styles.court}>
         <View style={styles.frontCourt}>
-          <TouchableOpacity style={styles.lineUpPosition} onPress={() => assignPosition(index)}>
-            
+          <TouchableOpacity style={styles.lineUpPosition} onPress={() => assignPosition(4)}>
+            {isDefined(lineups[currentSet][4]) ? (
+              <Avatar number={lineups[currentSet][4].dorsal} size={50} color="primary" />
+            ) : (
+              <Avatar size={50} color="primary" />
+            )}
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.lineUpPosition} onPress={() => assignPosition(3)}>
+            {isDefined(lineups[currentSet][3]) ? (
+              <Avatar number={lineups[currentSet][3].dorsal} size={50} color="primary" />
+            ) : (
+              <Avatar size={50} color="primary" />
+            )}
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.lineUpPosition} onPress={() => assignPosition(2)}>
+            {isDefined(lineups[currentSet][2]) ? (
+              <Avatar number={lineups[currentSet][2].dorsal} size={50} color="primary" />
+            ) : (
+              <Avatar size={50} color="primary" />
+            )}
           </TouchableOpacity>
         </View>
         <View style={styles.backCourt}>
+          <TouchableOpacity style={styles.lineUpPosition} onPress={() => assignPosition(5)}>
+              {isDefined(lineups[currentSet][5]) ? (
+                <Avatar number={lineups[currentSet][5].dorsal} size={50} color="primary" />
+              ) : (
+                <Avatar size={50} color="primary" />
+              )}
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.lineUpPosition} onPress={() => assignPosition(6)}>
+              {isDefined(lineups[currentSet][6]) ? (
+                <Avatar number={lineups[currentSet][6].dorsal} size={50} color="primary" />
+              ) : (
+                <Avatar size={50} color="primary" />
+              )}
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.lineUpPosition} onPress={() => assignPosition(1)}>
+              {isDefined(lineups[currentSet][1]) ? (
+                <Avatar number={lineups[currentSet][1].dorsal} size={50} color="primary" />
+              ) : (
+                <Avatar size={50} color="primary" />
+              )}
+            </TouchableOpacity>
         </View>
       </View>
-      <Text>{JSON.stringify(matchDetails.lineups)}</Text>
+      <View style={styles.rolesContainer}>
+        <View style={styles.rolesRow}>
+          <View style={styles.roleRowLeft}>
+            <Text style={styles.roleTitle}>Captain</Text>
+            <TouchableOpacity style={styles.lineUpPosition} onPress={() => assignCaptain()}>
+            <View style={styles.player}>
+                <Avatar number={captains[currentSet].dorsal} size={50} color="secondary" />
+                <View style={styles.playerInfoContainer}>
+                  <View style={styles.playerInfo}>
+                    <Text style={styles.playerName}>{captains[currentSet].name} {captains[currentSet].surname}</Text>
+                  </View>
+                  <Text style={styles.playerPosition}>{captains[currentSet].position}</Text>
+                </View>
+              </View>
+            </TouchableOpacity>
+          </View>
+          <View>
+            <Text style={styles.roleTitle}>Rotation</Text>
+              <Text style={styles.setterTitle}>Setter Position</Text>
+            <View style={styles.rotationNavigator}>
+              <TouchableOpacity onPress={goToPreviousRotation}>
+                <Icon name="chevron-left" size={30} color="#676D75" />
+              </TouchableOpacity>
+              <Text style={styles.setNumber}>{setterPosition[currentSet]}</Text>
+              <TouchableOpacity onPress={goToNextRotation}>
+                <Icon name="chevron-right" size={30} color="#676D75" />
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+        <View  style={styles.rolesLibero}>
+          <Text style={styles.roleTitle}>Libero</Text>
+          <TouchableOpacity style={styles.player} onPress={() => assignLibero(1)}>
+            {isDefined(liberos[currentSet][1]) ? (
+              <View style={styles.player}>
+              
+                <Avatar number={liberos[currentSet][1].dorsal} size={50} color="secondary" />
+                <View style={styles.playerInfoContainer}>
+                  <View style={styles.playerInfo}>
+                    <Text style={styles.playerName}>{liberos[currentSet][1].name} {liberos[currentSet][1].surname}</Text>
+                    <Badges type="receive" />
+                  </View>
+                  <Text style={styles.playerPosition}>{liberos[currentSet][1].position}</Text>
+                </View>
+              </View>
+            ) : (
+              <Avatar size={50} color="secondary" />
+            )}
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.player} onPress={() => assignLibero(2)}>
+            {isDefined(liberos[currentSet][2]) ? (
+              <View style={styles.player}>
+              
+                <Avatar number={liberos[currentSet][2].dorsal} size={50} color="secondary" />
+                <View style={styles.playerInfoContainer}>
+                  <View style={styles.playerInfo}>
+                    <Text style={styles.playerName}>{liberos[currentSet][2].name} {liberos[currentSet][2].surname}</Text>
+                    <Badges type="defense" />
+                  </View>
+                  <Text style={styles.playerPosition}>{liberos[currentSet][2].position}</Text>
+                </View>
+              </View>
+            ) : (
+              <Avatar size={50} color="secondary" />
+            )}
+          </TouchableOpacity>
+        </View>
+      </View>
       <View style={styles.playersContainer}>
         <Text style={styles.playersTitle}>Players</Text>
         <ScrollView style={styles.playerScroll}>
           {matchDetails.players.map((player, index) => (
             <TouchableOpacity onPress={() => selectPlayer(player)} key={index}>
               <View style={[styles.player, selectedPlayer && selectedPlayer._id === player._id && styles.selectedPlayer]} key={index}>
-                <Avatar number={player.dorsal} size={50} />
+                <Avatar number={player.dorsal} size={50} color="secondary" />
                 <View style={styles.playerInfoContainer}>
                   <View style={styles.playerInfo}>
                     <Text style={styles.playerName}>{player.name} {player.surname}</Text>
@@ -126,6 +323,13 @@ const styles = StyleSheet.create({
     marginHorizontal: 6,
     color: '#fff'
   },
+  rotationNavigator: {
+    flexDirection: 'row',
+    width: 200,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
   court: {
     width: '100%',
     height: 200,
@@ -134,16 +338,22 @@ const styles = StyleSheet.create({
   },
   frontCourt: {
     width: '100%',
+    flexDirection: 'row',
     height: 70,
+    justifyContent: 'space-around',
+    alignItems: 'center',
     borderBottomColor: '#fff',
     borderBottomWidth: 1,
   },
+  lineUpPosition: {
+
+  },
   backCourt: {
     width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
     height: 130,
-  },
-  playersContainer: {
-    marginTop: 20,
   },
   playerScroll: {
     flexGrow: 1,
@@ -155,6 +365,20 @@ const styles = StyleSheet.create({
     color: '#fff',
     marginBottom: 10,
     fontWeight: 'bold',
+  },
+  roleTitle: {
+    fontSize: 16,
+    color: '#fff',
+    marginBottom: 10,
+    fontWeight: 'bold',
+  },
+  setterTitle: {
+    fontSize: 14,
+    color: '#fff',
+    marginBottom: 10,
+    fontWeight: 'bold',
+    width: '100%',
+    textAlign: 'center',
   },
   player: {
     flexDirection: 'row',
@@ -184,7 +408,27 @@ const styles = StyleSheet.create({
     borderColor: '#fff',
     overflow: 'visible',
     overlayColor: 'transparent',
-  }
+  },
+  rolesContainer: {
+    marginVertical: 20,
+    borderWidth: 1,
+    borderColor: '#fff',
+    height: 250,
+  },
+  rolesRow: {
+    display: 'flex',
+    flexDirection: 'row',
+    width: '100%',
+    height: '50%',
+  },
+  roleRowLeft: {
+    display: 'flex',
+    flexDirection: 'column',
+    width: '50%',
+    marginRight: '2%',
+    borderRightWidth: 1,
+    borderRightColor: '#676D75',
+  },
 });
 
 export default LineupsScreen;
