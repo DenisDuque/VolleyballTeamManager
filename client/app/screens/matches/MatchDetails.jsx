@@ -71,7 +71,6 @@ const MatchDetailsScreen = ({ route }) => {
   const handleLineupsPress = (matchId) => {
     navigation.navigate('Lineups', { matchId });
   };
-  console.log(statusType[matchDetails.status])
   return (
     <View style={styles.container}>
       <Text style={styles.date}>{matchDetails?.date && formatDate(matchDetails.date)}</Text>

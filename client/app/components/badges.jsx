@@ -3,7 +3,6 @@ import { View, Text, StyleSheet } from 'react-native';
 
 const Badges = ({ type }) => {
 
-    console.log(type);
     const types = {
         senior: {
             text: 'Senior',

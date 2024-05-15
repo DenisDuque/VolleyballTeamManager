@@ -18,9 +18,11 @@ const matchSchema = new Schema<IMatchDocument, IMatchModel>({
     }],
     status: { type: Number, required: true, enum: [0, 1, 2] }, // 0 = Pending, 1 = Won, 2 = Lost
     lineups: [{
+        set: { type: Number, required: true},
+        rotation: { type: Number, required: true, default: 1,},
         players: [{
             _id: { type: Schema.Types.ObjectId, ref: 'players', required: true },
-            middleblocker: { type: Boolean, required: true }
+            isCaptain: { type: Boolean, default: false }
         }],
         libero: [{
             _id: { type: Schema.Types.ObjectId, ref: 'players', required: true },

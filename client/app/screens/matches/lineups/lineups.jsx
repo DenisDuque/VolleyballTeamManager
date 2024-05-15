@@ -15,11 +15,10 @@ const LineupsScreen = ({ route }) => {
   const [setterPosition, setSetterPosition] = useState({ 1: 1, 2: 1, 3: 1, 4: 1, 5: 1, });
   const [matchDetails, setMatchDetails] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [playersOnCourt, setPlayersOnCourt] = useState([]);
   const [selectedPlayer, setSelectedPlayer] = useState(null);
   const [lineups, setLineups] = useState({ 1: {}, 2: {}, 3: {}, 4: {}, 5: {}, });
   const [captains, setCaptains] = useState({ 1: {}, 2: {}, 3: {}, 4: {}, 5: {}, });
-  const [liberos, setLiberos] = useState({ 1: {}, 2: {}, 3: {}, 4: {}, 5: {}, });
+  const [liberos, setLiberos] = useState({ 1: [], 2: [], 3: [], 4: [], 5: [], });
 
   useEffect(() => {
     const fetchMatchDetails = async () => {
@@ -30,6 +29,54 @@ const LineupsScreen = ({ route }) => {
         }
         const matchData = await response.json();
         setMatchDetails(matchData);
+        if (matchData.lineups) {
+          const updatedRotations = { ...setterPosition };
+          for (let set = 0; set <= 4; set++) {
+            const rotation = matchData.lineups[set].rotation;
+            
+            updatedRotations[set+1] = rotation;
+            
+            
+            
+            if (matchData.lineups[set]) {
+              const updatedLineups = { ...lineups };
+              for (let position = 0; position <= 5; position++) {
+                if (matchData.lineups[set].players[position]) {
+                  const player = {
+                    _id: matchData.lineups[set].players[position]._id._id,
+                    dorsal: matchData.lineups[set].players[position]._id.dorsal,
+                    name: matchData.lineups[set].players[position]._id.name,
+                    surname: matchData.lineups[set].players[position]._id.surname,
+                    position: matchData.lineups[set].players[position]._id.position,
+                  }
+                  updatedLineups[set+1][position+1] = player;
+                  setLineups(updatedLineups);
+
+                  if (matchData.lineups[set].players[position].isCaptain == true) {
+                    const updatedCaptains = { ...captains };
+                    updatedCaptains[set+1] = player;
+                    setCaptains(updatedCaptains);
+                  }
+                }
+              }
+              if (matchData.lineups[set].libero) {
+                const updatedLiberos = { ...liberos };
+                matchData.lineups[set].libero.forEach((liberoData, index) => {
+                  const libero = {
+                    _id: liberoData._id._id,
+                    dorsal: liberoData._id.dorsal,
+                    name: liberoData._id.name,
+                    surname: liberoData._id.surname,
+                    position: liberoData._id.position,
+                  };
+                  updatedLiberos[set + 1][index] = libero;
+                });
+                setLiberos(updatedLiberos);
+              }
+            }
+          };
+          setSetterPosition(updatedRotations);
+        }
         setLoading(false);
       } catch (error) {
         console.error('There was a problem fetching the data:', error);
@@ -74,7 +121,7 @@ const LineupsScreen = ({ route }) => {
     const updatedRotations = { ...setterPosition };
     if (updatedRotations[currentSet] > 1) {
       updatedRotations[currentSet] -= 1;
-      setSetterPosition(updatedRotations);
+      setSetterPosition(updatedRotations, saveChanges);
     }
   };
   
@@ -83,11 +130,10 @@ const LineupsScreen = ({ route }) => {
     const totalPositions = 6;
     if (updatedRotations[currentSet] < totalPositions) {
       updatedRotations[currentSet] += 1;
-      setSetterPosition(updatedRotations);
+      setSetterPosition(updatedRotations, saveChanges);
     }
   };
   
-
   const selectPlayer = (player) => {
     setSelectedPlayer(player);
   };
@@ -106,6 +152,7 @@ const LineupsScreen = ({ route }) => {
     }
     updatedLineups[currentSet][position] = selectedPlayer;
     setLineups(updatedLineups);
+    saveChanges();
   };
 
   const assignCaptain = () => {
@@ -115,6 +162,7 @@ const LineupsScreen = ({ route }) => {
       updatedCaptains[currentSet] = selectedPlayer;
     }
     setCaptains(updatedCaptains);
+    saveChanges();
   }
 
   const assignLibero = (index) => {
@@ -124,6 +172,7 @@ const LineupsScreen = ({ route }) => {
       updatedLiberos[currentSet][index] = selectedPlayer;
     }
     setLiberos(updatedLiberos);
+    saveChanges();
   }
 
   const isDefined = (obj) => {
@@ -152,8 +201,67 @@ const LineupsScreen = ({ route }) => {
     }
     return null;
   };
+
+  const saveChanges = async () => {
+    try {
+      const response = await fetch(`http://${apiUrl}/matches/updateLineups`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          matchId: matchId,
+          lineups: formatChanges(),
+        }),
+      });
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      console.log('Lineups updated successfully!');
+    } catch (error) {
+      console.error('There was a problem updating lineups:', error);
+    }
+  };
   
+  const formatChanges = () => {
+    const formattedLineups = [];
   
+    for (let set = 1; set <= 5; set++) {
+      const rotation = setterPosition[set];
+      const players = [];
+      const libero = [];
+  
+      if (lineups[set] && captains[set]) {
+        for (let position = 1; position <= 6; position++) {
+          if (lineups[set][position]) {
+            players.push({
+              _id: lineups[set][position]._id,
+              isCaptain: captains[set]._id && lineups[set][position]._id === captains[set]._id,
+            });
+          }
+        }
+      }
+  
+      if (liberos[set] && liberos[set][0] && liberos[set][1]) {
+        libero.push({
+          _id: liberos[set][0]._id,
+          receiving: true,
+        }, {
+          _id: liberos[set][1]._id,
+          receiving: false,
+        });
+      }
+  
+      formattedLineups.push({
+        set: set,
+        rotation: rotation,
+        players: players,
+        libero: libero,
+      });
+    };
+  
+    return formattedLineups;
+  };
 
   return (
     <View style={styles.container}>
@@ -246,6 +354,23 @@ const LineupsScreen = ({ route }) => {
         </View>
         <View  style={styles.rolesLibero}>
           <Text style={styles.roleTitle}>Libero</Text>
+          <TouchableOpacity style={styles.player} onPress={() => assignLibero(0)}>
+            {isDefined(liberos[currentSet][0]) ? (
+              <View style={styles.player}>
+              
+                <Avatar number={liberos[currentSet][0].dorsal} size={50} color="secondary" />
+                <View style={styles.playerInfoContainer}>
+                  <View style={styles.playerInfo}>
+                    <Text style={styles.playerName}>{liberos[currentSet][0].name} {liberos[currentSet][0].surname}</Text>
+                    <Badges type="receive" />
+                  </View>
+                  <Text style={styles.playerPosition}>{liberos[currentSet][0].position}</Text>
+                </View>
+              </View>
+            ) : (
+              <Avatar size={50} color="secondary" />
+            )}
+          </TouchableOpacity>
           <TouchableOpacity style={styles.player} onPress={() => assignLibero(1)}>
             {isDefined(liberos[currentSet][1]) ? (
               <View style={styles.player}>
@@ -254,26 +379,9 @@ const LineupsScreen = ({ route }) => {
                 <View style={styles.playerInfoContainer}>
                   <View style={styles.playerInfo}>
                     <Text style={styles.playerName}>{liberos[currentSet][1].name} {liberos[currentSet][1].surname}</Text>
-                    <Badges type="receive" />
-                  </View>
-                  <Text style={styles.playerPosition}>{liberos[currentSet][1].position}</Text>
-                </View>
-              </View>
-            ) : (
-              <Avatar size={50} color="secondary" />
-            )}
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.player} onPress={() => assignLibero(2)}>
-            {isDefined(liberos[currentSet][2]) ? (
-              <View style={styles.player}>
-              
-                <Avatar number={liberos[currentSet][2].dorsal} size={50} color="secondary" />
-                <View style={styles.playerInfoContainer}>
-                  <View style={styles.playerInfo}>
-                    <Text style={styles.playerName}>{liberos[currentSet][2].name} {liberos[currentSet][2].surname}</Text>
                     <Badges type="defense" />
                   </View>
-                  <Text style={styles.playerPosition}>{liberos[currentSet][2].position}</Text>
+                  <Text style={styles.playerPosition}>{liberos[currentSet][1].position}</Text>
                 </View>
               </View>
             ) : (

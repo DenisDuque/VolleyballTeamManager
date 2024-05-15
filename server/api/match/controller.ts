@@ -32,11 +32,11 @@ export const getMatch = async (req: Request, res: Response) => {
     })
     .populate({
       path: 'lineups.players._id',
-      select: 'name' 
+      select: 'name surname position dorsal'
     })
     .populate({
       path: 'lineups.libero._id',
-      select: 'name'
+      select: 'name surname position dorsal'
     });
       
     res.json(match);
