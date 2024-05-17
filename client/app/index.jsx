@@ -10,6 +10,7 @@ import HomeScreen from './screens/home/home';
 import MatchesScreen from './screens/matches/matches';
 import LineupsScreen from './screens/matches/lineups/lineups';
 import { useNavigation } from '@react-navigation/native';
+import InGameScreen from './screens/matches/game/in-game';
 const Stack = createStackNavigator();
 
 export default function App() {
@@ -42,6 +43,12 @@ export default function App() {
                 })} 
               />
               <Stack.Screen name="Lineups" component={LineupsScreen} navigation={navigation} 
+                options={({ route }) => ({ 
+                  matchId: route.params.matchId, 
+                  ...options.default
+                })} 
+              />
+              <Stack.Screen name="In Game" component={InGameScreen} navigation={navigation} 
                 options={({ route }) => ({ 
                   matchId: route.params.matchId, 
                   ...options.default

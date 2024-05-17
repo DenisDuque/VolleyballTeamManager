@@ -86,15 +86,78 @@ const LineupsScreen = ({ route }) => {
     fetchMatchDetails();
   }, [matchId]);
 
+  const saveChanges = async () => {
+    try {
+      const response = await fetch(`http://${apiUrl}/matches/updateLineups`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          matchId: matchId,
+          lineups: formatChanges(),
+        }),
+      });
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      console.log('Lineups updated successfully!');
+    } catch (error) {
+      console.error('There was a problem updating lineups:', error);
+    }
+  };
+  
+  const formatChanges = () => {
+    const formattedLineups = [];
+  
+    for (let set = 1; set <= 5; set++) {
+      const rotation = setterPosition[set];
+      const players = [];
+      const libero = [];
+  
+      if (lineups[set] && captains[set]) {
+        for (let position = 1; position <= 6; position++) {
+          if (lineups[set][position]) {
+            players.push({
+              _id: lineups[set][position]._id,
+              isCaptain: captains[set]._id && lineups[set][position]._id === captains[set]._id,
+            });
+          }
+        }
+      }
+  
+      if (liberos[set] && liberos[set][0] && liberos[set][1]) {
+        libero.push({
+          _id: liberos[set][0]._id,
+          receiving: true,
+        }, {
+          _id: liberos[set][1]._id,
+          receiving: false,
+        });
+      }
+  
+      formattedLineups.push({
+        set: set,
+        rotation: rotation,
+        players: players,
+        libero: libero,
+      });
+    };
+  
+    return formattedLineups;
+  };
+
+  useEffect(() => {
+    const saveSetterPositionChanges = async () => {
+      await saveChanges();
+    };
+    saveSetterPositionChanges();
+  }, [setterPosition]);
+
   useEffect(() => {
 
 
   }, [currentSet]);
-
-  useEffect(() => {
-
-
-  }, [setterPosition]);
 
   if (loading || !matchDetails) {
     return (
@@ -102,7 +165,7 @@ const LineupsScreen = ({ route }) => {
         <ActivityIndicator size="large" color="#0000ff" />
       </View>
     );
-  }
+  };
 
   const goToPreviousSet = () => {
     if (currentSet > 1) {
@@ -121,7 +184,7 @@ const LineupsScreen = ({ route }) => {
     const updatedRotations = { ...setterPosition };
     if (updatedRotations[currentSet] > 1) {
       updatedRotations[currentSet] -= 1;
-      setSetterPosition(updatedRotations, saveChanges);
+      setSetterPosition(updatedRotations);
     }
   };
   
@@ -130,7 +193,7 @@ const LineupsScreen = ({ route }) => {
     const totalPositions = 6;
     if (updatedRotations[currentSet] < totalPositions) {
       updatedRotations[currentSet] += 1;
-      setSetterPosition(updatedRotations, saveChanges);
+      setSetterPosition(updatedRotations);
     }
   };
   
@@ -200,67 +263,6 @@ const LineupsScreen = ({ route }) => {
       }
     }
     return null;
-  };
-
-  const saveChanges = async () => {
-    try {
-      const response = await fetch(`http://${apiUrl}/matches/updateLineups`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          matchId: matchId,
-          lineups: formatChanges(),
-        }),
-      });
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      console.log('Lineups updated successfully!');
-    } catch (error) {
-      console.error('There was a problem updating lineups:', error);
-    }
-  };
-  
-  const formatChanges = () => {
-    const formattedLineups = [];
-  
-    for (let set = 1; set <= 5; set++) {
-      const rotation = setterPosition[set];
-      const players = [];
-      const libero = [];
-  
-      if (lineups[set] && captains[set]) {
-        for (let position = 1; position <= 6; position++) {
-          if (lineups[set][position]) {
-            players.push({
-              _id: lineups[set][position]._id,
-              isCaptain: captains[set]._id && lineups[set][position]._id === captains[set]._id,
-            });
-          }
-        }
-      }
-  
-      if (liberos[set] && liberos[set][0] && liberos[set][1]) {
-        libero.push({
-          _id: liberos[set][0]._id,
-          receiving: true,
-        }, {
-          _id: liberos[set][1]._id,
-          receiving: false,
-        });
-      }
-  
-      formattedLineups.push({
-        set: set,
-        rotation: rotation,
-        players: players,
-        libero: libero,
-      });
-    };
-  
-    return formattedLineups;
   };
 
   return (
@@ -519,8 +521,6 @@ const styles = StyleSheet.create({
   },
   rolesContainer: {
     marginVertical: 20,
-    borderWidth: 1,
-    borderColor: '#fff',
     height: 250,
   },
   rolesRow: {

@@ -63,9 +63,106 @@
   "date": "2024-05-06T18:00:00.000Z",
   "type": 0,
   "result": [],
-  "status": "Pending",
-  "lineups": [],
+  "status": 0,
+  "lineups": [
+    {
+      "set": 1,
+      "rotation": 2,
+      "players": [
+        {
+          "_id": {
+            "$oid": "662f4011686a98b15373a356"
+          },
+          "isCaptain": true
+        },
+        {
+          "_id": {
+            "$oid": "662f4011686a98b15373a355"
+          },
+          "isCaptain": false
+        },
+        {
+          "_id": {
+            "$oid": "662f4011686a98b15373a346"
+          },
+          "isCaptain": false
+        },
+        {
+          "_id": {
+            "$oid": "662f4011686a98b15373a345"
+          },
+          "isCaptain": false
+        },
+        {
+          "_id": {
+            "$oid": "662f4011686a98b15373a358"
+          },
+          "isCaptain": false
+        },
+        {
+          "_id": {
+            "$oid": "662f4011686a98b15373a357"
+          },
+          "isCaptain": false
+        }
+      ],
+      "libero": [
+        {
+          "_id": {
+            "$oid": "662f4011686a98b15373a344"
+          },
+          "receiving": true
+        },
+        {
+          "_id": {
+            "$oid": "662f4011686a98b15373a343"
+          },
+          "receiving": false
+        }
+      ],
+      "_id": {
+        "$oid": "66449b0cf0c089dcc65c7532"
+      }
+    },
+    {
+      "set": 2,
+      "rotation": 1,
+      "players": [],
+      "libero": [],
+      "_id": {
+        "$oid": "66449b0cf0c089dcc65c7533"
+      }
+    },
+    {
+      "set": 3,
+      "rotation": 1,
+      "players": [],
+      "libero": [],
+      "_id": {
+        "$oid": "66449b0cf0c089dcc65c7534"
+      }
+    },
+    {
+      "set": 4,
+      "rotation": 1,
+      "players": [],
+      "libero": [],
+      "_id": {
+        "$oid": "66449b0cf0c089dcc65c7535"
+      }
+    },
+    {
+      "set": 5,
+      "rotation": 1,
+      "players": [],
+      "libero": [],
+      "_id": {
+        "$oid": "66449b0cf0c089dcc65c7536"
+      }
+    }
+  ],
   "finished": false,
   "createdAt": "2024-04-29T12:00:00.000Z",
-  "updatedAt": "2024-04-29T12:00:00.000Z"
+  "updatedAt": "2024-04-29T12:00:00.000Z",
+  "__v": 42
 }]
