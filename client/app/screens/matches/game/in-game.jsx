@@ -25,8 +25,6 @@ const InGameScreen = ({ route }) => {
                 
                 updatedRotations[set+1] = rotation;
                 
-                
-                
                 if (matchData.lineups[set]) {
                   const updatedLineups = { ...lineups };
                   for (let position = 0; position <= 5; position++) {
