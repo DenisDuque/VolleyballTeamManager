@@ -29,7 +29,7 @@ const LineupsScreen = ({ route }) => {
         }
         const matchData = await response.json();
         setMatchDetails(matchData);
-        if (matchData.lineups) {
+        if (matchData.lineups.length > 0) {
           const updatedRotations = { ...setterPosition };
           for (let set = 0; set <= 4; set++) {
             const rotation = matchData.lineups[set].rotation;

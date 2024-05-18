@@ -1,13 +1,27 @@
-import { View, Text } from "react-native";
-
+import React, { useEffect, useState, useContext } from 'react';
+import { StyleSheet, Text, View, ActivityIndicator, ScrollView, Button, TouchableOpacity  } from 'react-native';
+import Avatar from '../../../components/Avatar';
 const InGameScreen = ({ route }) => {
-    const { matchId } = route.params;
-    const [currentSet, setCurrentSet] = useState(1);
-    const [setterPosition, setSetterPosition] = useState({ 1: 1, 2: 1, 3: 1, 4: 1, 5: 1, });
-    const [matchDetails, setMatchDetails] = useState(null);
+    const apiUrl = process.env.EXPO_PUBLIC_API_URL || '192.168.0.30:3000';
     const [loading, setLoading] = useState(true);
-    const [selectedPlayer, setSelectedPlayer] = useState(null);
+    const { matchId } = route.params;
+    const [matchDetails, setMatchDetails] = useState(null);
+
+    const [currentSet, setCurrentSet] = useState(1);
     const [lineups, setLineups] = useState({ 1: {}, 2: {}, 3: {}, 4: {}, 5: {}, });
+    const [setterPosition, setSetterPosition] = useState({ 1: 1, 2: 1, 3: 1, 4: 1, 5: 1, });
+    const [selectedPlayer, setSelectedPlayer] = useState(null);
+    const [interactions, setInteractions] = useState({ 1: {}, 2: {}, 3: {}, 4: {}, 5: {}, });
+
+    const [courtStatus, setCourtStatus] = useState();
+    const [actualRotation, setActualRotation] = useState(1);
+    const [lastPoint, setLastPoint] = useState(null);
+    const [liberos, setLiberos] = useState();
+    const [middleBlocker, setMiddleBlocker] = useState();
+    const [serve, setServe] = useState(false);
+    
+    const [teamPoints, setTeamPoints] = useState({ 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, });
+    const [rivalPoints, setRivalPoints] = useState({ 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, });
 
     useEffect(() => {
         const fetchMatchDetails = async () => {
@@ -18,12 +32,14 @@ const InGameScreen = ({ route }) => {
             }
             const matchData = await response.json();
             setMatchDetails(matchData);
-            if (matchData.lineups) {
+            if (matchData.lineups.length > 0) {
               const updatedRotations = { ...setterPosition };
               for (let set = 0; set <= 4; set++) {
                 const rotation = matchData.lineups[set].rotation;
                 
                 updatedRotations[set+1] = rotation;
+                
+                
                 
                 if (matchData.lineups[set]) {
                   const updatedLineups = { ...lineups };
@@ -38,12 +54,6 @@ const InGameScreen = ({ route }) => {
                       }
                       updatedLineups[set+1][position+1] = player;
                       setLineups(updatedLineups);
-    
-                      if (matchData.lineups[set].players[position].isCaptain == true) {
-                        const updatedCaptains = { ...captains };
-                        updatedCaptains[set+1] = player;
-                        setCaptains(updatedCaptains);
-                      }
                     }
                   }
                   if (matchData.lineups[set].libero) {
@@ -82,85 +92,63 @@ const InGameScreen = ({ route }) => {
     };
 
     return (
-        <View style={styles.container}>
-      <View style={styles.setNavigator}>
-        <TouchableOpacity onPress={goToPreviousSet}>
-          <Icon name="chevron-left" size={30} color="#676D75" />
-        </TouchableOpacity>
-        <Text style={styles.setNumber}>Set {currentSet}</Text>
-        <TouchableOpacity onPress={goToNextSet}>
-          <Icon name="chevron-right" size={30} color="#676D75" />
-        </TouchableOpacity>
-      </View>
-      <View style={styles.court}>
-        <View style={styles.frontCourt}>
-          <TouchableOpacity style={styles.lineUpPosition} onPress={() => assignPosition(4)}>
-            {isDefined(lineups[currentSet][4]) ? (
-              <Avatar number={lineups[currentSet][4].dorsal} size={50} color="primary" />
-            ) : (
-              <Avatar size={50} color="primary" />
-            )}
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.lineUpPosition} onPress={() => assignPosition(3)}>
-            {isDefined(lineups[currentSet][3]) ? (
-              <Avatar number={lineups[currentSet][3].dorsal} size={50} color="primary" />
-            ) : (
-              <Avatar size={50} color="primary" />
-            )}
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.lineUpPosition} onPress={() => assignPosition(2)}>
-            {isDefined(lineups[currentSet][2]) ? (
-              <Avatar number={lineups[currentSet][2].dorsal} size={50} color="primary" />
-            ) : (
-              <Avatar size={50} color="primary" />
-            )}
-          </TouchableOpacity>
+      <View style={styles.container}>
+        <Text style={[styles.title, { textAlign: 'center' }]}>Court Status</Text>
+        <View style={styles.court}>
+            <View style={styles.frontCourt}></View>
+            <View style={styles.backCourt}></View>
         </View>
-        <View style={styles.backCourt}>
-          <TouchableOpacity style={styles.lineUpPosition} onPress={() => assignPosition(5)}>
-              {isDefined(lineups[currentSet][5]) ? (
-                <Avatar number={lineups[currentSet][5].dorsal} size={50} color="primary" />
-              ) : (
-                <Avatar size={50} color="primary" />
-              )}
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.lineUpPosition} onPress={() => assignPosition(6)}>
-              {isDefined(lineups[currentSet][6]) ? (
-                <Avatar number={lineups[currentSet][6].dorsal} size={50} color="primary" />
-              ) : (
-                <Avatar size={50} color="primary" />
-              )}
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.lineUpPosition} onPress={() => assignPosition(1)}>
-              {isDefined(lineups[currentSet][1]) ? (
-                <Avatar number={lineups[currentSet][1].dorsal} size={50} color="primary" />
-              ) : (
-                <Avatar size={50} color="primary" />
-              )}
-            </TouchableOpacity>
-        </View>
+
+        <Text style={[styles.title, { textAlign: 'left' }]}>Last point</Text>
+        {lastPoint != null ? (
+          <Avatar size={50} color="secondary" undefinedAvatar={true} />
+        ) : (
+          <Avatar size={50} color="secondary" undefinedAvatar={true} />
+        )}
+        
+        <Text style={[styles.title, { textAlign: 'left' }]}>Benched</Text>
+        <Text style={[styles.title, { textAlign: 'center' }]}>Scoreboard</Text>
       </View>
-      <View style={styles.playersContainer}>
-        <Text style={styles.playersTitle}>Benched</Text>
-        <ScrollView style={styles.playerScroll}>
-          {matchDetails.players.map((player, index) => (
-            <TouchableOpacity onPress={() => selectPlayer(player)} key={index}>
-              <View style={[styles.player, selectedPlayer && selectedPlayer._id === player._id && styles.selectedPlayer]} key={index}>
-                <Avatar number={player.dorsal} size={50} color="secondary" />
-                <View style={styles.playerInfoContainer}>
-                  <View style={styles.playerInfo}>
-                    <Text style={styles.playerName}>{player.name} {player.surname}</Text>
-                    {player._id === matchDetails.team.captain && <Badges type="captain" />}
-                  </View>
-                  <Text style={styles.playerPosition}>{player.position}</Text>
-                </View>
-              </View>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
-      </View>
-    </View>
     );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#131417',
+    padding: 10,
+  },
+  title: {
+    width: '100%',
+    fontSize: 20,
+    color: '#fff',
+    marginVertical: 10,
+  },
+  court: {
+    width: '100%',
+    height: 200,
+    backgroundColor: '#1D1F24',
+    borderRadius: 5,
+  },
+  frontCourt: {
+    width: '100%',
+    flexDirection: 'row',
+    height: 70,
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    borderBottomColor: '#fff',
+    borderBottomWidth: 1,
+  },
+  lineUpPosition: {
+
+  },
+  backCourt: {
+    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    height: 130,
+  },
+});
 
 export default InGameScreen;
