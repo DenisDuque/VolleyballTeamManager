@@ -1,6 +1,8 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { StyleSheet, Text, View, ActivityIndicator, ScrollView, Button, TouchableOpacity  } from 'react-native';
 import Avatar from '../../../components/Avatar';
+import Badges from '../../../components/badges';
+
 const InGameScreen = ({ route }) => {
     const apiUrl = process.env.EXPO_PUBLIC_API_URL || '192.168.0.30:3000';
     const [loading, setLoading] = useState(true);
@@ -13,11 +15,12 @@ const InGameScreen = ({ route }) => {
     const [selectedPlayer, setSelectedPlayer] = useState(null);
     const [interactions, setInteractions] = useState({ 1: {}, 2: {}, 3: {}, 4: {}, 5: {}, });
 
-    const [courtStatus, setCourtStatus] = useState();
+    const [courtStatus, setCourtStatus] = useState([]);
     const [actualRotation, setActualRotation] = useState(1);
     const [lastPoint, setLastPoint] = useState(null);
     const [liberos, setLiberos] = useState();
     const [middleBlocker, setMiddleBlocker] = useState();
+    const [benchedPlayers, setBenchedPlayers] = useState();
     const [serve, setServe] = useState(false);
     
     const [teamPoints, setTeamPoints] = useState({ 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, });
@@ -58,7 +61,11 @@ const InGameScreen = ({ route }) => {
                   }
                   if (matchData.lineups[set].libero) {
                     const updatedLiberos = { ...liberos };
+                    if (!updatedLiberos[set + 1]) {
+                      updatedLiberos[set + 1] = [];
+                    }
                     matchData.lineups[set].libero.forEach((liberoData, index) => {
+                      
                       const libero = {
                         _id: liberoData._id._id,
                         dorsal: liberoData._id.dorsal,
@@ -83,6 +90,32 @@ const InGameScreen = ({ route }) => {
         fetchMatchDetails();
     }, [matchId]);
 
+    const updateBenchedPlayers = () => {
+        if (!matchDetails || !matchDetails.team || !matchDetails.team.players) {
+          return;
+        }
+      
+        const currentLineupPlayers = Object.values(lineups[currentSet] || {}).map(player => player._id);
+        const currentLiberos = (liberos && liberos[currentSet]) ? liberos[currentSet].map(libero => libero._id) : [];
+        const allPlayingPlayers = [...currentLineupPlayers, ...currentLiberos];
+      
+        const benchedPlayers = matchDetails.team.players.filter(player => 
+          !allPlayingPlayers.includes(player._id)
+        );
+      
+        setBenchedPlayers(benchedPlayers);
+    };
+
+    const calculateNumber = (setterPos, playerPos) => {
+      const sum = setterPos + playerPos;
+      return ((sum - 1) % 6) + 1;
+    };
+
+    const isDefined = (obj) => {
+      const defined = obj && Object.keys(obj).length > 0;
+      return defined;
+    };
+
     if (loading || !matchDetails) {
         return (
             <View style={styles.container}>
@@ -95,8 +128,52 @@ const InGameScreen = ({ route }) => {
       <View style={styles.container}>
         <Text style={[styles.title, { textAlign: 'center' }]}>Court Status</Text>
         <View style={styles.court}>
-            <View style={styles.frontCourt}></View>
-            <View style={styles.backCourt}></View>
+            <View style={styles.frontCourt}>
+              <TouchableOpacity style={styles.lineUpPosition} onPress={() => assignPosition(4)}>
+                {courtStatus[3] && courtStatus[3].dorsal ? (
+                  <Avatar number={courtStatus[3].dorsal} size={50} color="primary" />
+                ) : (
+                  <Avatar size={50} color="primary" undefinedAvatar={true} />
+                )}
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.lineUpPosition} onPress={() => assignPosition(3)}>
+                {courtStatus[2] && courtStatus[2].dorsal ? (
+                  <Avatar number={courtStatus[2].dorsal} size={50} color="primary" />
+                ) : (
+                  <Avatar size={50} color="primary" undefinedAvatar={true} />
+                )}
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.lineUpPosition} onPress={() => assignPosition(2)}>
+                {courtStatus[1] && courtStatus[1].dorsal ? (
+                  <Avatar number={courtStatus[1].dorsal} size={50} color="primary" />
+                ) : (
+                  <Avatar size={50} color="primary" undefinedAvatar={true} />
+                )}
+              </TouchableOpacity>
+            </View>
+            <View style={styles.backCourt}>
+              <TouchableOpacity style={styles.lineUpPosition} onPress={() => assignPosition(5)}>
+                {courtStatus[4] && courtStatus[4].dorsal ? (
+                  <Avatar number={courtStatus[4].dorsal} size={50} color="primary" />
+                ) : (
+                  <Avatar size={50} color="primary" undefinedAvatar={true} />
+                )}
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.lineUpPosition} onPress={() => assignPosition(6)}>
+                {courtStatus[5] && courtStatus[5].dorsal ? (
+                  <Avatar number={courtStatus[5].dorsal} size={50} color="primary" />
+                ) : (
+                  <Avatar size={50} color="primary" undefinedAvatar={true} />
+                )}
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.lineUpPosition} onPress={() => assignPosition(1)}>
+                {courtStatus[0] && courtStatus[0].dorsal ? (
+                  <Avatar number={courtStatus[0].dorsal} size={50} color="primary" />
+                ) : (
+                  <Avatar size={50} color="primary" undefinedAvatar={true} />
+                )}
+              </TouchableOpacity>
+            </View>
         </View>
 
         <Text style={[styles.title, { textAlign: 'left' }]}>Last point</Text>
@@ -107,6 +184,27 @@ const InGameScreen = ({ route }) => {
         )}
         
         <Text style={[styles.title, { textAlign: 'left' }]}>Benched</Text>
+        <ScrollView style={styles.playerScroll}>
+        {benchedPlayers && benchedPlayers.length > 0 ? (
+          benchedPlayers.map((player, index) => (
+            <TouchableOpacity onPress={() => selectPlayer(player)} key={index}>
+              <View style={[styles.player, selectedPlayer && selectedPlayer._id === player._id && styles.selectedPlayer]} key={index}>
+                <Avatar number={player.dorsal} size={50} color="secondary" />
+                <View style={styles.playerInfoContainer}>
+                  <View style={styles.playerInfo}>
+                    <Text style={styles.playerName}>{player.name} {player.surname}</Text>
+                    {player._id === matchDetails.team.captain && <Badges type="captain" />}
+                  </View>
+                  <Text style={styles.playerPosition}>{player.position}</Text>
+                </View>
+              </View>
+            </TouchableOpacity>
+          ))
+        ) : (
+          <Text style={[styles.title, { color: '#fff' }]}>No benched players available</Text>
+        )}
+
+        </ScrollView>
         <Text style={[styles.title, { textAlign: 'center' }]}>Scoreboard</Text>
       </View>
     );
@@ -148,6 +246,40 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     alignItems: 'center',
     height: 130,
+  },
+  playerScroll: {
+    flexGrow: 1,
+    height: 175,
+    maxHeight: 175,
+  },
+  player: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 5,
+  },
+  playerInfoContainer: {
+    flexDirection: 'column',
+    marginLeft: 10,
+  },
+  playerInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  playerName: {
+    fontSize: 16,
+    color: '#fff',
+    marginRight: 5,
+  },
+  playerPosition: {
+    fontSize: 14,
+    color: '#999',
+    marginTop: -3,
+  },
+  selectedPlayer: {
+    borderWidth: 1,
+    borderColor: '#fff',
+    overflow: 'visible',
+    overlayColor: 'transparent',
   },
 });
 
