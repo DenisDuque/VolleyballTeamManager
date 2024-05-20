@@ -18,6 +18,7 @@ const InGameScreen = ({ route }) => {
     const [courtStatus, setCourtStatus] = useState([]);
     const [actualRotation, setActualRotation] = useState(1);
     const [lastPoint, setLastPoint] = useState(null);
+    const [lastStatus, setLastStatus] = useState([]);
     const [liberos, setLiberos] = useState();
     const [middleBlocker, setMiddleBlocker] = useState();
     const [benchedPlayers, setBenchedPlayers] = useState();
@@ -80,6 +81,8 @@ const InGameScreen = ({ route }) => {
                 }
               };
               setSetterPosition(updatedRotations);
+              setNewCourtStatus();
+              updateBenchedPlayers();
             }
             setLoading(false);
           } catch (error) {
@@ -90,26 +93,59 @@ const InGameScreen = ({ route }) => {
         fetchMatchDetails();
     }, [matchId]);
 
-    const updateBenchedPlayers = () => {
-        if (!matchDetails || !matchDetails.team || !matchDetails.team.players) {
-          return;
-        }
-      
-        const currentLineupPlayers = Object.values(lineups[currentSet] || {}).map(player => player._id);
-        const currentLiberos = (liberos && liberos[currentSet]) ? liberos[currentSet].map(libero => libero._id) : [];
-        const allPlayingPlayers = [...currentLineupPlayers, ...currentLiberos];
-      
-        const benchedPlayers = matchDetails.team.players.filter(player => 
-          !allPlayingPlayers.includes(player._id)
-        );
-      
-        setBenchedPlayers(benchedPlayers);
+    const setNewCourtStatus = () => {
+      const newCourtStatus = [];
+
+      for (let position = 1; position <= 6; position++) {
+        newCourtStatus.push(lineups[currentSet][position]);
+      }
+      setLastStatus(courtStatus);
+      setCourtStatus(newCourtStatus);
     };
 
-    const calculateNumber = (setterPos, playerPos) => {
-      const sum = setterPos + playerPos;
-      return ((sum - 1) % 6) + 1;
+    const updateCourtStatus = () => {
+      if (!courtStatus || !lineups || !courtStatus > 0 || !lineups > 0) {
+        return;
+      }
+
+      const newCourtStatus = [
+        courtStatus[1],
+        courtStatus[2],
+        courtStatus[3],
+        courtStatus[4],
+        courtStatus[5],
+        courtStatus[0]
+      ];
+
+      const getRotation = actualRotation;
+
+      if (getRotation == 1) {
+        setActualRotation(6);
+      } else {
+        setActualRotation(getRotation-1)
+      }
+
+      setLastStatus(courtStatus);
+      setCourtStatus(newCourtStatus);
     };
+
+    const updateBenchedPlayers = () => {
+        
+        const currentCourtPlayers = courtStatus.map(player => player ? player._id : null).filter(id => id !== null);
+        const currentLiberos = (liberos && liberos[currentSet]) ? liberos[currentSet].map(libero => libero._id) : [];
+        const allPlayingPlayers = [...currentCourtPlayers, ...currentLiberos];
+        const benchedPlayers = matchDetails.players.filter(player => !allPlayingPlayers.includes(player._id));
+    
+        setBenchedPlayers(benchedPlayers);
+    };
+  
+
+    const revertStatus = () => {
+      if (lastStatus.length > 0) {
+        setCourtStatus(lastStatus);
+      }
+      setLastStatus = [];
+    }
 
     const isDefined = (obj) => {
       const defined = obj && Object.keys(obj).length > 0;
@@ -206,6 +242,8 @@ const InGameScreen = ({ route }) => {
 
         </ScrollView>
         <Text style={[styles.title, { textAlign: 'center' }]}>Scoreboard</Text>
+        <Button title="Update Court Status" onPress={updateCourtStatus} />
+
       </View>
     );
 }
