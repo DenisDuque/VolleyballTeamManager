@@ -82,7 +82,6 @@ const InGameScreen = ({ route }) => {
               };
               setSetterPosition(updatedRotations);
               setNewCourtStatus();
-              updateBenchedPlayers();
             }
             setLoading(false);
           } catch (error) {
@@ -92,6 +91,10 @@ const InGameScreen = ({ route }) => {
     
         fetchMatchDetails();
     }, [matchId]);
+
+    useEffect(() => {
+      updateBenchedPlayers(matchDetails);
+    }, [courtStatus]);
 
     const setNewCourtStatus = () => {
       const newCourtStatus = [];
@@ -129,14 +132,15 @@ const InGameScreen = ({ route }) => {
       setCourtStatus(newCourtStatus);
     };
 
-    const updateBenchedPlayers = () => {
-        
-        const currentCourtPlayers = courtStatus.map(player => player ? player._id : null).filter(id => id !== null);
-        const currentLiberos = (liberos && liberos[currentSet]) ? liberos[currentSet].map(libero => libero._id) : [];
-        const allPlayingPlayers = [...currentCourtPlayers, ...currentLiberos];
-        const benchedPlayers = matchDetails.players.filter(player => !allPlayingPlayers.includes(player._id));
-    
-        setBenchedPlayers(benchedPlayers);
+    const updateBenchedPlayers = (data) => {
+        if (data) {
+          const currentCourtPlayers = courtStatus.map(player => player ? player._id : null).filter(id => id !== null);
+          const currentLiberos = (liberos && liberos[currentSet]) ? liberos[currentSet].map(libero => libero._id) : [];
+          const allPlayingPlayers = [...currentCourtPlayers, ...currentLiberos];
+          const benchedPlayers = data.players.filter(player => !allPlayingPlayers.includes(player._id));
+          console.log(allPlayingPlayers);
+          setBenchedPlayers(benchedPlayers);
+        }
     };
   
 
