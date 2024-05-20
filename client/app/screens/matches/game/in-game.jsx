@@ -1,7 +1,9 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { StyleSheet, Text, View, ActivityIndicator, ScrollView, Button, TouchableOpacity  } from 'react-native';
+import { StyleSheet, Text, View, ActivityIndicator, ScrollView, Button, TouchableOpacity, Modal } from 'react-native';
 import Avatar from '../../../components/Avatar';
 import Badges from '../../../components/badges';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import { Picker } from '@react-native-picker/picker';
 
 const InGameScreen = ({ route }) => {
     const apiUrl = process.env.EXPO_PUBLIC_API_URL || '192.168.0.30:3000';
@@ -13,7 +15,8 @@ const InGameScreen = ({ route }) => {
     const [lineups, setLineups] = useState({ 1: {}, 2: {}, 3: {}, 4: {}, 5: {}, });
     const [setterPosition, setSetterPosition] = useState({ 1: 1, 2: 1, 3: 1, 4: 1, 5: 1, });
     const [selectedPlayer, setSelectedPlayer] = useState(null);
-    const [interactions, setInteractions] = useState({ 1: {}, 2: {}, 3: {}, 4: {}, 5: {}, });
+    const [interactionSelectedPlayer, setInteractionSelectedPlayer] = useState();
+    const [interactions, setInteractions] = useState([[], [], [], [], []]);
 
     const [courtStatus, setCourtStatus] = useState([]);
     const [actualRotation, setActualRotation] = useState(1);
@@ -26,6 +29,10 @@ const InGameScreen = ({ route }) => {
     
     const [teamPoints, setTeamPoints] = useState({ 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, });
     const [rivalPoints, setRivalPoints] = useState({ 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, });
+
+    const [modalVisible, setModalVisible] = useState(false);
+    const [selectedValue, setSelectedValue] = useState('');
+    const [nestedSelectedValue, setNestedSelectedValue] = useState('');
 
     useEffect(() => {
         const fetchMatchDetails = async () => {
@@ -164,58 +171,165 @@ const InGameScreen = ({ route }) => {
         );
     };
 
+    const addPoints = (team) => {
+      if (team) {
+        const updatedPoints = {...teamPoints};
+        const totalPoints = updatedPoints[currentSet] + 1;
+        updatedPoints[currentSet] = totalPoints;
+        setTeamPoints(updatedPoints);
+        if (!serve) {
+          updateCourtStatus();
+          setServe(true);
+        }
+        if (totalPoints >= 25 && (totalPoints-rivalPoints[currentSet] >= 2)) {
+          changeSet();
+        }
+      } else {
+        const updatedPoints = {...rivalPoints}
+        const totalPoints = updatedPoints[currentSet] + 1;
+        updatedPoints[currentSet] = totalPoints;
+        setRivalPoints(updatedPoints);
+        setServe(false);
+        if (totalPoints >= 25 && (totalPoints-teamPoints[currentSet] >= 2)) {
+          changeSet();
+        }
+      }
+    }
+
+    const saveInteraction = () => {
+      const newInteraction = {
+        match: matchId,
+        player: interactionSelectedPlayer._id,
+        setNumber: currentSet,
+        teamPoints: teamPoints,
+        rivalPoints: rivalPoints,
+        action: nestedSelectedValue,
+        type: selectedValue,
+      };
+      const actualInteractions = {...interactions};
+      actualInteractions[currentSet - 1].push(newInteraction);
+      setInteractions(actualInteractions);
+      console.log(interactions);
+    };
+
+    const setLastInteraction = () => {
+      
+    };
+
+    const getLastElement = (set) => {
+      const keys = Object.keys(set).sort((a, b) => a - b);
+      const lastKey = keys[keys.length - 1];
+      return set[lastKey];
+    };
+  
+    
+
+    const changeSet = () => {
+      console.log("Cambiando de set...");
+    }
+
+    const startInteraction = (player) => {
+      setInteractionSelectedPlayer(player);
+      setModalVisible(true);
+    };
+
+    const handleSelect = () => {
+        setModalVisible(false);
+        saveInteraction();
+    };
+
     return (
       <View style={styles.container}>
         <Text style={[styles.title, { textAlign: 'center' }]}>Court Status</Text>
         <View style={styles.court}>
             <View style={styles.frontCourt}>
-              <TouchableOpacity style={styles.lineUpPosition} onPress={() => assignPosition(4)}>
-                {courtStatus[3] && courtStatus[3].dorsal ? (
-                  <Avatar number={courtStatus[3].dorsal} size={50} color="primary" />
-                ) : (
-                  <Avatar size={50} color="primary" undefinedAvatar={true} />
-                )}
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.lineUpPosition} onPress={() => assignPosition(3)}>
-                {courtStatus[2] && courtStatus[2].dorsal ? (
-                  <Avatar number={courtStatus[2].dorsal} size={50} color="primary" />
-                ) : (
-                  <Avatar size={50} color="primary" undefinedAvatar={true} />
-                )}
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.lineUpPosition} onPress={() => assignPosition(2)}>
-                {courtStatus[1] && courtStatus[1].dorsal ? (
-                  <Avatar number={courtStatus[1].dorsal} size={50} color="primary" />
-                ) : (
-                  <Avatar size={50} color="primary" undefinedAvatar={true} />
-                )}
-              </TouchableOpacity>
+              {courtStatus[3] && courtStatus[3].dorsal ? (
+                <TouchableOpacity style={styles.lineUpPosition} onPress={() => startInteraction(courtStatus[3])}>
+                    <Avatar number={courtStatus[3].dorsal} size={50} color="primary" />
+                </TouchableOpacity>
+              ) : (
+                <Avatar size={50} color="primary" undefinedAvatar={true} />
+              )}
+              {courtStatus[2] && courtStatus[2].dorsal ? (
+                <TouchableOpacity style={styles.lineUpPosition} onPress={() => startInteraction(courtStatus[2])}>
+                    <Avatar number={courtStatus[2].dorsal} size={50} color="primary" />
+                </TouchableOpacity>
+              ) : (
+                <Avatar size={50} color="primary" undefinedAvatar={true} />
+              )}
+              {courtStatus[1] && courtStatus[1].dorsal ? (
+                <TouchableOpacity style={styles.lineUpPosition} onPress={() => startInteraction(courtStatus[1])}>
+                    <Avatar number={courtStatus[1].dorsal} size={50} color="primary" />
+                </TouchableOpacity>
+              ) : (
+                <Avatar size={50} color="primary" undefinedAvatar={true} />
+              )}
             </View>
             <View style={styles.backCourt}>
-              <TouchableOpacity style={styles.lineUpPosition} onPress={() => assignPosition(5)}>
-                {courtStatus[4] && courtStatus[4].dorsal ? (
-                  <Avatar number={courtStatus[4].dorsal} size={50} color="primary" />
-                ) : (
-                  <Avatar size={50} color="primary" undefinedAvatar={true} />
-                )}
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.lineUpPosition} onPress={() => assignPosition(6)}>
-                {courtStatus[5] && courtStatus[5].dorsal ? (
-                  <Avatar number={courtStatus[5].dorsal} size={50} color="primary" />
-                ) : (
-                  <Avatar size={50} color="primary" undefinedAvatar={true} />
-                )}
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.lineUpPosition} onPress={() => assignPosition(1)}>
-                {courtStatus[0] && courtStatus[0].dorsal ? (
-                  <Avatar number={courtStatus[0].dorsal} size={50} color="primary" />
-                ) : (
-                  <Avatar size={50} color="primary" undefinedAvatar={true} />
-                )}
-              </TouchableOpacity>
+              {courtStatus[4] && courtStatus[4].dorsal ? (
+                <TouchableOpacity style={styles.lineUpPosition} onPress={() => startInteraction(courtStatus[4])}>
+                    <Avatar number={courtStatus[4].dorsal} size={50} color="primary" />
+                </TouchableOpacity>
+              ) : (
+                <Avatar size={50} color="primary" undefinedAvatar={true} />
+              )}
+              {courtStatus[5] && courtStatus[5].dorsal ? (
+                <TouchableOpacity style={styles.lineUpPosition} onPress={() => startInteraction(courtStatus[5])}>
+                    <Avatar number={courtStatus[5].dorsal} size={50} color="primary" />
+                </TouchableOpacity>
+              ) : (
+                <Avatar size={50} color="primary" undefinedAvatar={true} />
+              )}
+              {courtStatus[0] && courtStatus[0].dorsal ? (
+                <TouchableOpacity style={styles.lineUpPosition} onPress={() => startInteraction(courtStatus[0])}>
+                    <Avatar number={courtStatus[0].dorsal} size={50} color="primary" />
+                </TouchableOpacity>
+              ) : (
+                <Avatar size={50} color="primary" undefinedAvatar={true} />
+              )}
             </View>
         </View>
+        <Modal
+            animationType="slide"
+            transparent={true}
+            visible={modalVisible}
+            onRequestClose={() => {
+                setModalVisible(!modalVisible);
+            }}
+        >
+            <View style={styles.modalView}>
+              <Text style={[styles.title, { textAlign: 'center' }]}>Interaction</Text>
+              <Picker
+                selectedValue={selectedValue}
+                style={styles.picker}
+                onValueChange={(itemValue, itemIndex) => setSelectedValue(itemValue)}
+              >
+                <Picker.Item label="Select type" value="" />
+                <Picker.Item label="Good Interaction" value="good_interaction" />
+                <Picker.Item label="Bad Interaction" value="bad_interaction" />
+                <Picker.Item label="Continuity" value="continuity" />
+                <Picker.Item label="Swap" value="swap" />
+              </Picker>
 
+                {selectedValue !== '' && (
+                    <Picker
+                        selectedValue={nestedSelectedValue}
+                        style={styles.picker}
+                        onValueChange={(itemValue, itemIndex) => setNestedSelectedValue(itemValue)}
+                    >
+                        <Picker.Item label="Select action" value="" />
+                        <Picker.Item label="Spike" value="spike" />
+                        <Picker.Item label="Block" value="block" />
+                        <Picker.Item label="Defense" value="defense" />
+                        <Picker.Item label="Serve" value="serve" />
+                        <Picker.Item label="Receive" value="receive" />
+                    </Picker>
+                )}
+
+                <Button title="Seleccionar" onPress={handleSelect} />
+                <Button title="Cancelar" onPress={() => setModalVisible(false)} />
+            </View>
+        </Modal>
         <Text style={[styles.title, { textAlign: 'left' }]}>Last point</Text>
         {lastPoint != null ? (
           <Avatar size={50} color="secondary" undefinedAvatar={true} />
@@ -243,11 +357,41 @@ const InGameScreen = ({ route }) => {
         ) : (
           <Text style={[styles.title, { color: '#fff' }]}>No benched players available</Text>
         )}
-
         </ScrollView>
         <Text style={[styles.title, { textAlign: 'center' }]}>Scoreboard</Text>
+        <View style={[styles.sc_box_container]}>
+          <View style={styles.sc_container}>
+            <View style={styles.sc_Teams}>
+              <Text style={[styles.sc_title]}>You</Text>
+              <View  style={styles.sc_square}>
+                <Text style={[styles.sc_title, { textAlign: 'center' }]}>{teamPoints[currentSet]}</Text>
+              </View>
+            </View>
+            <View style={styles.sc_info_container}>
+              <TouchableOpacity  onPress={() => addPoints(true)}>
+                <View style={styles.sc_square_plus}>
+                  <Icon name="add" size={30} color="#539DF3" />
+                </View>
+              </TouchableOpacity>
+              <View style={styles.sc_set_info}>
+                <Text style={[styles.sc_title, {color: '#676D75'}]}>Set</Text>
+                <Text style={[styles.sc_title, { textAlign: 'center' }]}>{currentSet}</Text>
+              </View>
+              <TouchableOpacity onPress={() => addPoints(false)}>
+                <View style={styles.sc_square_plus}>
+                  <Icon name="add" size={30} color="#539DF3" />
+                </View>
+              </TouchableOpacity>
+            </View>
+            <View style={styles.sc_Teams}>
+              <Text style={[styles.sc_title]}>Rival</Text>
+              <View style={styles.sc_square}>
+                <Text style={[styles.sc_title, { textAlign: 'center' }]}>{rivalPoints[currentSet]}</Text>
+              </View>
+            </View>
+          </View>
+        </View>
         <Button title="Update Court Status" onPress={updateCourtStatus} />
-
       </View>
     );
 }
@@ -322,6 +466,75 @@ const styles = StyleSheet.create({
     borderColor: '#fff',
     overflow: 'visible',
     overlayColor: 'transparent',
+  },
+  sc_box_container: {
+    width: '100%',
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+  },
+  sc_container: {
+    borderWidth: 1,
+    borderColor: '#fff',
+    width: 300,
+    justifyContent: 'space-between',
+    flexDirection: 'row',
+  },
+  sc_Teams: {
+    borderWidth: 1,
+    borderColor: '#ddd',
+    width: 70,
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+  },
+  sc_info_container: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  sc_set_info: {
+    marginHorizontal: 15,
+  },
+  sc_title: {
+    fontSize: 20,
+    color: '#fff',
+  },
+  sc_square: {
+    width: 40,
+    height: 40,
+    backgroundColor: '#1D1F24',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 5,
+  },
+  sc_square_plus: {
+    width: 30,
+    height: 30,
+    backgroundColor: '#1D1F24',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 5,
+  },
+  modalView: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginTop: 22,
+      backgroundColor: '#1D1F24',
+      padding: 20,
+      borderRadius: 10,
+      shadowColor: '#000',
+      shadowOffset: {
+          width: 0,
+          height: 2,
+      },
+      shadowOpacity: 0.25,
+      shadowRadius: 4,
+      elevation: 5,
+  },
+  picker: {
+    height: 50,
+    width: 250,
   },
 });
 
