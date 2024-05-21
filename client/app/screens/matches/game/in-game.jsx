@@ -29,6 +29,7 @@ const InGameScreen = ({ route }) => {
     
     const [teamPoints, setTeamPoints] = useState({ 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, });
     const [rivalPoints, setRivalPoints] = useState({ 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, });
+    const [result, setResult] = useState({ 1: {}, 2: {}, 3: {}, 4: {}, 5: {}, });
 
     const [modalVisible, setModalVisible] = useState(false);
     const [selectedValue, setSelectedValue] = useState('');
@@ -206,14 +207,41 @@ const InGameScreen = ({ route }) => {
         action: nestedSelectedValue,
         type: selectedValue,
       };
+
       const actualInteractions = {...interactions};
       actualInteractions[currentSet - 1].push(newInteraction);
       setInteractions(actualInteractions);
-      console.log(interactions);
+      setLastInteraction();
     };
 
     const setLastInteraction = () => {
+      const total = countPlayerInteractions(interactionSelectedPlayer._id);
+      const {good, bad, neutral} = classifyInteractions(interactionSelectedPlayer._id);
       
+      const goodPercentage = ((good / total) * 100).toFixed(0);
+      const badPercentage = ((bad / total) * 100).toFixed(0);
+      const neutralPercentage = ((neutral / total) * 100).toFixed(0);
+
+      const formatActionText = (text) => {
+          let formattedText = text.replace(/_/g, ' ');
+          formattedText = formattedText.charAt(0).toUpperCase() + formattedText.slice(1);
+          return formattedText;
+      };
+
+      const lastInteraction = {
+          id: interactionSelectedPlayer._id,
+          dorsal: interactionSelectedPlayer.dorsal,
+          name: interactionSelectedPlayer.name,
+          surname: interactionSelectedPlayer.surname,
+          position: interactionSelectedPlayer.position,
+          action: formatActionText(nestedSelectedValue),
+          type: selectedValue,
+          good: `${goodPercentage}%`,
+          neutral: `${neutralPercentage}%`,
+          bad: `${badPercentage}%`,
+      };
+      console.log(lastInteraction);
+      setLastPoint(lastInteraction);
     };
 
     const getLastElement = (set) => {
@@ -221,11 +249,57 @@ const InGameScreen = ({ route }) => {
       const lastKey = keys[keys.length - 1];
       return set[lastKey];
     };
+
+    const countPlayerInteractions = (playerId) => {
+        let count = 0;
+        if (interactions.length > 0) {
+          interactions.forEach(setInteractions => {
+              if (setInteractions.length > 0) {
+                setInteractions.forEach(interaction => {
+                    if (interaction.player === playerId) {
+                        count++;
+                    }
+                });
+              }
+          });
+        }
+        return count;
+    };
+
+    const classifyInteractions = (playerId) => {
+        let good = 0;
+        let bad = 0;
+        let neutral = 0;
+        if (interactions.length > 0) {
+          interactions.forEach(setInteractions => {
+            if (setInteractions.length > 0) {
+              setInteractions.forEach(interaction => {
+                  if (interaction.player === playerId) {
+                      if (interaction.type === 'good') {
+                          good++;
+                      } else if (interaction.type === 'bad') {
+                          bad++;
+                      } else {
+                          neutral++;
+                      }
+                  }
+              });
+            }
+          });
+        }
+        return { good, bad, neutral };
+    };
   
     
 
     const changeSet = () => {
-      console.log("Cambiando de set...");
+      if (currentSet == 5) {
+        console.log("Finalizando partido...");
+      } else {
+        console.log("Cambiando de set...");
+        setCurrentSet(currentSet+1);
+        setNewCourtStatus();
+      }
     }
 
     const startInteraction = (player) => {
@@ -305,13 +379,13 @@ const InGameScreen = ({ route }) => {
                 onValueChange={(itemValue, itemIndex) => setSelectedValue(itemValue)}
               >
                 <Picker.Item label="Select type" value="" />
-                <Picker.Item label="Good Interaction" value="good_interaction" />
-                <Picker.Item label="Bad Interaction" value="bad_interaction" />
-                <Picker.Item label="Continuity" value="continuity" />
+                <Picker.Item label="Good Interaction" value="good" />
+                <Picker.Item label="Bad Interaction" value="bad" />
+                <Picker.Item label="Continuity" value="neutral" />
                 <Picker.Item label="Swap" value="swap" />
               </Picker>
 
-                {selectedValue !== '' && (
+                {selectedValue !== '' && selectedValue !== 'swap' && (
                     <Picker
                         selectedValue={nestedSelectedValue}
                         style={styles.picker}
@@ -326,13 +400,31 @@ const InGameScreen = ({ route }) => {
                     </Picker>
                 )}
 
-                <Button title="Seleccionar" onPress={handleSelect} />
+                <Button title="Seleccionar"  style={[{ marginVertical: 10 }]} onPress={handleSelect} />
+                <View style={[{ marginVertical: 5 }]}></View>
                 <Button title="Cancelar" onPress={() => setModalVisible(false)} />
             </View>
         </Modal>
         <Text style={[styles.title, { textAlign: 'left' }]}>Last point</Text>
         {lastPoint != null ? (
-          <Avatar size={50} color="secondary" undefinedAvatar={true} />
+          <View style={[styles.player]}>
+            <Avatar number={lastPoint.dorsal} size={50} color="secondary" />
+            <View style={styles.playerInfoContainer}>
+              <View style={styles.playerInfo}>
+                <Text style={styles.playerName}>{lastPoint.action}</Text>
+                {lastPoint.type === 'good' && (
+                  <Icon name="thumb-up" size={20} color="green" />
+                )}
+                {lastPoint.type === 'bad' && (
+                        <Icon name="thumb-down" size={20} color="red" />
+                )}
+                {lastPoint.type === 'neutral' && (
+                        <Icon name="drag-handle" size={20} color="orange" />
+                )}
+              </View>
+              <Text style={styles.playerPosition}>{lastPoint.name} {lastPoint.surname}</Text>
+            </View>
+          </View>
         ) : (
           <Avatar size={50} color="secondary" undefinedAvatar={true} />
         )}
@@ -341,7 +433,7 @@ const InGameScreen = ({ route }) => {
         <ScrollView style={styles.playerScroll}>
         {benchedPlayers && benchedPlayers.length > 0 ? (
           benchedPlayers.map((player, index) => (
-            <TouchableOpacity onPress={() => selectPlayer(player)} key={index}>
+            <TouchableOpacity onPress={() => setSelectedPlayer(player)} key={index}>
               <View style={[styles.player, selectedPlayer && selectedPlayer._id === player._id && styles.selectedPlayer]} key={index}>
                 <Avatar number={player.dorsal} size={50} color="secondary" />
                 <View style={styles.playerInfoContainer}>
@@ -391,7 +483,6 @@ const InGameScreen = ({ route }) => {
             </View>
           </View>
         </View>
-        <Button title="Update Court Status" onPress={updateCourtStatus} />
       </View>
     );
 }
@@ -474,15 +565,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   sc_container: {
-    borderWidth: 1,
-    borderColor: '#fff',
     width: 300,
     justifyContent: 'space-between',
     flexDirection: 'row',
   },
   sc_Teams: {
-    borderWidth: 1,
-    borderColor: '#ddd',
     width: 70,
     display: 'flex',
     flexDirection: 'column',
@@ -535,6 +622,7 @@ const styles = StyleSheet.create({
   picker: {
     height: 50,
     width: 250,
+    color: '#fff',
   },
 });
 
