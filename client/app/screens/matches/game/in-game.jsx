@@ -29,6 +29,7 @@ const InGameScreen = ({ route }) => {
     
     const [teamPoints, setTeamPoints] = useState({ 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, });
     const [rivalPoints, setRivalPoints] = useState({ 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, });
+    const [setsWon, setSetsWon] = useState(0);
     const [result, setResult] = useState({ 1: {}, 2: {}, 3: {}, 4: {}, 5: {}, });
 
     const [modalVisible, setModalVisible] = useState(false);
@@ -99,6 +100,10 @@ const InGameScreen = ({ route }) => {
     
         fetchMatchDetails();
     }, [matchId]);
+
+    useEffect(() => {
+      setNewCourtStatus();
+    }, [currentSet]);
 
     useEffect(() => {
       updateBenchedPlayers(matchDetails);
@@ -198,20 +203,47 @@ const InGameScreen = ({ route }) => {
     }
 
     const saveInteraction = () => {
-      const newInteraction = {
-        match: matchId,
-        player: interactionSelectedPlayer._id,
-        setNumber: currentSet,
-        teamPoints: teamPoints,
-        rivalPoints: rivalPoints,
-        action: nestedSelectedValue,
-        type: selectedValue,
-      };
+      
+      if (selectedValue == 'swap') {
+        if (!selectedPlayer) {
+          return;
+        }
+        const newInteraction = {
+          match: matchId,
+          player: interactionSelectedPlayer._id,
+          setNumber: currentSet,
+          teamPoints: teamPoints,
+          rivalPoints: rivalPoints,
+          action: null,
+          playerToSwap: selectedPlayer._id,
+          type: selectedValue,
+        };
+        const actualInteractions = {...interactions};
+        actualInteractions[currentSet - 1].push(newInteraction);
+        setInteractions(actualInteractions);
 
-      const actualInteractions = {...interactions};
-      actualInteractions[currentSet - 1].push(newInteraction);
-      setInteractions(actualInteractions);
-      setLastInteraction();
+        const index = courtStatus.findIndex(player => player && player._id === interactionSelectedPlayer._id);
+        if (index !== -1) {
+            const updatedCourtStatus = [...courtStatus];
+            updatedCourtStatus[index] = selectedPlayer;
+            setCourtStatus(updatedCourtStatus);
+        }
+      } else {
+        const newInteraction = {
+          match: matchId,
+          player: interactionSelectedPlayer._id,
+          setNumber: currentSet,
+          teamPoints: teamPoints[currentSet],
+          rivalPoints: rivalPoints[currentSet],
+          action: nestedSelectedValue,
+          type: selectedValue,
+          playerToSwap: null,
+        };
+        const actualInteractions = {...interactions};
+        actualInteractions[currentSet - 1].push(newInteraction);
+        setInteractions(actualInteractions);
+        setLastInteraction();
+      }
     };
 
     const setLastInteraction = () => {
@@ -293,8 +325,16 @@ const InGameScreen = ({ route }) => {
     
 
     const changeSet = () => {
-      if (currentSet == 5) {
+      const updatedResults = {...result};
+      updatedResults[currentSet] = {
+        set: currentSet,
+        team: teamPoints[currentSet],
+        rival: rivalPoints[currentSet],
+      }
+      setResult(updatedResults);
+      if (currentSet == 5 || (currentSet == 4 && (setsWon == 3 || setsWon == 1)) || (currentSet == 3 && (setsWon == 3 || setsWon == 0))) {
         console.log("Finalizando partido...");
+        saveGame();
       } else {
         console.log("Cambiando de set...");
         setCurrentSet(currentSet+1);
@@ -311,6 +351,65 @@ const InGameScreen = ({ route }) => {
         setModalVisible(false);
         saveInteraction();
     };
+
+    const saveInteractions = async () => {
+      const savedInteractions = JSON.stringify({ interactions })
+      try {
+        const response = await fetch(`http://${apiUrl}/interactions/saveInteractions`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: savedInteractions
+        });
+    
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+    
+        const responseData = await response.json();
+        console.log('Interactions saved successfully:', responseData);
+      } catch (error) {
+        console.error('There was a problem saving the interactions:', error);
+      }
+    };
+    const saveGame = async () => {
+      try {
+        saveInteractions();
+        
+        const finalStatus = setsWon === 3 ? 1 : 2;
+
+        const resultArray = Object.values(result).map(setResult => ({
+          teamPoints: setResult.teamPoints || 0,
+          rivalPoints: setResult.rivalPoints || 0
+        }));
+
+        const game = {
+          matchId: matchId,
+          result: resultArray,
+          status: finalStatus,
+        }
+        console.log(JSON.stringify(game));
+        // save result
+        // is finished
+        const response = await fetch(`http://${apiUrl}/matches/saveGame`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(game)
+        });
+    
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+    
+        const responseData = await response.json();
+        setLoading(false);
+      } catch (error) {
+        console.error('There was a problem saving the game:', error);
+      }
+    }
 
     return (
       <View style={styles.container}>

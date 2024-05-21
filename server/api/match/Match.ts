@@ -12,9 +12,8 @@ const matchSchema = new Schema<IMatchDocument, IMatchModel>({
     date: { type: Date, required: true },
     type: { type: Number, enum: [0, 1], required: true }, // 0 = Bo3, 1 = Bo5
     result: [{
-        set: { type: Number, required: true },
-        team: { type: Number, required: true },
-        rival: { type: Number, required: true }
+        team: { type: Number },
+        rival: { type: Number }
     }],
     status: { type: Number, required: true, enum: [0, 1, 2] }, // 0 = Pending, 1 = Won, 2 = Lost
     lineups: [{

@@ -64,3 +64,29 @@ export const updateLineups = async (req: Request, res: Response) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+export const saveGame = async (req: Request, res: Response) => {
+  try {
+    const { matchId, result, status } = req.body;
+
+    const match = await MatchModel.findById(matchId);
+
+    if (!match) {
+      return res.status(404).json({ message: 'Partido no encontrado' });
+    }
+    const formattedResult = result.map((setResult: any) => ({
+      team: typeof setResult.teamPoints === 'object' ? setResult.teamPoints : setResult.teamPoints,
+      rival: typeof setResult.rivalPoints === 'object' ? setResult.rivalPoints : setResult.rivalPoints,
+    }));
+
+    match.result = formattedResult;
+    match.status = status;
+    match.finished = true;
+
+    await match.save();
+
+    res.json({ message: 'Partido guardado correctamente' });
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
+  }
+};

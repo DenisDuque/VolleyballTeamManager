@@ -25,26 +25,32 @@ export const getPlayerInteractions = async (req: Request, res: Response) => {
 
 export const saveInteractions = async (req: Request, res: Response) => {
   try {
-    const interactionsData = req.body;
+    const interactionsData = req.body.interactions;
 
-    const createPromises = interactionsData.map(async (interaction: any) => {
-      const { matchId, playerId, setNumber, teamPoints, rivalPoints, type } = interaction;
+    const createPromises = Object.keys(interactionsData).flatMap(key => {
+      return interactionsData[key].map(async (interaction: any) => {
+        if (interaction) {
+          const { match, player, setNumber, teamPoints, rivalPoints, type, action, playerToSwap } = interaction;
 
-      const newInteraction = new InteractionModel({
-        match: matchId,
-        player: playerId,
-        setNumber,
-        teamPoints,
-        rivalPoints,
-        type
+          const newInteraction = new InteractionModel({
+            match,
+            player,
+            setNumber,
+            teamPoints,
+            rivalPoints,
+            type,
+            action,
+            playerToSwap,
+          });
+          console.log(newInteraction);
+          await newInteraction.save();
+        }
       });
-
-      await newInteraction.save();
     });
 
     await Promise.all(createPromises);
 
-    res.status(201).json({ message: 'Interacciones creadas exitosamente' });
+    res.status(200).json({ message: 'Interacciones creadas exitosamente' });
   } catch (error: any) {
     res.status(500).json({ message: error.message });
   }

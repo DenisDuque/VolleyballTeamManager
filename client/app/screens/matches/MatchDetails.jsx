@@ -126,12 +126,32 @@ const MatchDetailsScreen = ({ route }) => {
                 <Text style={{ color: '#9953F3', fontSize: 18, marginLeft: 8 }}>Download Lineups</Text>
             </TouchableOpacity>
           </View>
-          <TouchableOpacity style={styles.startGameButton} onPress={() => handleStartGamePress(matchDetails._id)} >
-            <View style={styles.buttonContent}>
-              <Icon name="play-circle-outline" size={36} color="#FD9E02" />
-              <Text style={{ color: '#FD9E02', fontSize: 18 }}>Start Game</Text>
-            </View>
-          </TouchableOpacity>
+          {!matchDetails.finished ? (
+            <TouchableOpacity 
+              style={styles.startGameButton} 
+              onPress={() => handleStartGamePress(matchDetails._id)}
+            >
+              <View style={styles.buttonContent}>
+                <Icon name="play-circle-outline" size={36} color="#FD9E02" />
+                <Text style={{ color: '#FD9E02', fontSize: 18 }}>
+                  Start Game
+                </Text>
+              </View>
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity 
+              style={styles.startGameButton}
+            >
+              <View style={styles.buttonContent}>
+                <Icon name="play-circle-outline" size={36} color="#FD9E02" />
+                <Text style={{ color: '#FD9E02', fontSize: 18 }}>
+                  See Replay
+                </Text>
+              </View>
+            </TouchableOpacity>
+          )}
+
+
       </View>
     </View>
   );

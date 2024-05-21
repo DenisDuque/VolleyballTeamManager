@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { sendJsonResponse } from '../../helpers/util/express';
-import { getMatches, updateLineups, getMatch } from './controller';
+import { getMatches, updateLineups, getMatch, saveGame } from './controller';
 
 const router = Router();
 
@@ -21,6 +21,11 @@ router.get(
 router.post(
   '/updateLineups', 
   updateLineups,
+);
+
+router.post(
+  '/saveGame', 
+  saveGame,
 );
 
 export default router;

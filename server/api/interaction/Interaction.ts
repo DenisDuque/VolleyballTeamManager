@@ -9,8 +9,8 @@ const interactionSchema = new Schema({
     setNumber: { type: Number, required: true },
     teamPoints: { type: Number, required: true },
     rivalPoints: { type: Number, required: true },
-    type: { type: String, enum: ['good', 'bad', 'continuity', 'substitution', 'entrance'], required: true },
-    action: { type: String, enum: ['block', 'spike', 'set', 'receive', null], required: true },
+    type: { type: String, required: true },
+    action: { type: String, required: true },
     deleted: { type: Boolean, default: false },
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now }
