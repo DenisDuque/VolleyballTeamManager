@@ -625,8 +625,8 @@ const styles = StyleSheet.create({
   },
   playerScroll: {
     flexGrow: 1,
-    height: 175,
-    maxHeight: 175,
+    height: 330,
+    maxHeight: 330,
   },
   player: {
     flexDirection: 'row',

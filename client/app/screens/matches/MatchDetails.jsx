@@ -117,10 +117,18 @@ const MatchDetailsScreen = ({ route }) => {
       </View>
       <View style={styles.buttonsContainer}>
           <View style={styles.buttonsLeft}>
-            <TouchableOpacity style={styles.lineupsButton} onPress={() => handleLineupsPress(matchDetails._id)}>
+            {!matchDetails.finished ? (
+              <TouchableOpacity style={styles.lineupsButton} onPress={() => handleLineupsPress(matchDetails._id)}>
+                  <Icon name="assignment" size={36} color="#539DF3" />
+                  <Text style={{ color: '#539DF3', fontSize: 18, marginLeft: 8 }}>Lineups</Text>
+              </TouchableOpacity>
+
+            ) : (
+              <TouchableOpacity style={styles.lineupsButton}>
                 <Icon name="assignment" size={36} color="#539DF3" />
-                <Text style={{ color: '#539DF3', fontSize: 18, marginLeft: 8 }}>Lineups</Text>
-            </TouchableOpacity>
+                <Text style={{ color: '#539DF3', fontSize: 18, marginLeft: 8 }}>Results</Text>
+              </TouchableOpacity>
+            )}
             <TouchableOpacity style={styles.downloadLineupsButton}>
                 <Icon name="file-download" size={36} color="#9953F3" />
                 <Text style={{ color: '#9953F3', fontSize: 18, marginLeft: 8 }}>Download Lineups</Text>
@@ -231,8 +239,8 @@ const styles = StyleSheet.create({
   },
   playerScroll: {
     flexGrow: 1,
-    height: 300,
-    maxHeight: 300,
+    height: 470,
+    maxHeight: 470,
   },
   playersTitle: {
     fontSize: 18,
